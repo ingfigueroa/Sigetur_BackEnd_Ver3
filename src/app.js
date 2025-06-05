@@ -1,6 +1,6 @@
 import express from 'express';
 import estadosRoutes from './routes/estados.routes.js';
-import profesionmalesRoutes from './routes/profesionales.routes.js';
+import profesionalesRoutes from './routes/profesionales.routes.js';
 import pacientesRoutes from './routes/pacientes.routes.js';
 import obrassocialesRoutes from './routes/obrassociales.routes.js';
 import profesionesRoutes from './routes/profesiones.routes.js';
@@ -31,7 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(estadosRoutes);
-app.use(profesionmalesRoutes);
+app.use(profesionalesRoutes);
 app.use(pacientesRoutes);
 app.use(obrassocialesRoutes);
 app.use(profesionesRoutes);

@@ -1,7 +1,4 @@
-import {
-  getConnection,
-  sql
-} from '../database/connection.js';
+import {getConnection,sql} from '../database/connection.js';
 
 
 export const getTurnosCrear = async (req, res) => {
@@ -337,3 +334,36 @@ export const putTurnosCambiarEstados = async (req, res) => {
     });
   }
 }   
+export const getTurnosConsultasPorFecha = async (req, res) => {
+  try {
+    const { fechadesde, fechahasta, idprofesion, idestado } = req.query;
+    
+
+    // Validación rápida
+    if (!fechadesde || !fechahasta) {
+      console.log('Fechas no válidas:', fechadesde, fechahasta);
+      return res.status(400).json({ message: 'Fechas requeridas' });
+    } 
+
+  
+
+    const pool = await getConnection();
+    const request = pool.request();
+
+    request.input('fechadesde', sql.Date, fechadesde);
+    request.input('fechahasta', sql.Date, fechahasta);
+    request.input('idprofesion', sql.Int, idprofesion);
+    request.input('idestado', sql.Int, idestado);
+
+    const result = await request.execute('sp_Consulta_Turnos_Por_Fecha');
+
+    return res.json(result.recordset);
+
+  } catch (error) {
+    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    return res.status(500).json({
+      message: 'Error en el servidor',
+      error: error.message
+    });
+  }
+};
