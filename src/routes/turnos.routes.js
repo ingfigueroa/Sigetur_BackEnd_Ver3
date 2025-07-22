@@ -1,8 +1,10 @@
 import { Router } from "express";
 
-import { getTurnosProfesionalFecha, putTurnosPasaraPendiente, getTurnosCrear, putTurnosCambiarEstados, getEstadosPorTurno, putTurnosAnularPorPedidoProfesional, getTurnosBuscarProfesionalDiaCancelado, getAgendaSemanalProfesionalFecha, getAgendaSemanalProfesionalFechaAgrupado, getTurnosConsultasPorFecha } from '../controllers/turnos.controllers.js';
+import { getTurnosProfesionalFecha, putTurnosPasaraPendiente, getTurnosCrear, putTurnosCambiarEstados, getEstadosPorTurno, putTurnosAnularPorPedidoProfesional, getTurnosBuscarProfesionalDiaCancelado, getAgendaSemanalProfesionalFecha, getAgendaSemanalProfesionalFechaAgrupado, getTurnosConsultasPorFecha,getTurnoID } from '../controllers/turnos.controllers.js';
 
 const router = Router();
+
+router.get("/turnoid", getTurnoID);
 
 router.get("/turnos", getTurnosProfesionalFecha);
 
@@ -25,6 +27,8 @@ router.get("/turnos/ageseturproffecha",getAgendaSemanalProfesionalFecha);
 router.get('/turnos/AgeSemTurProfFechaAgrupado', getAgendaSemanalProfesionalFechaAgrupado);
 
 router.get('/turnos/consultasporfecha', getTurnosConsultasPorFecha);
+
+
 
 
 export default router;

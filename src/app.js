@@ -10,6 +10,8 @@ import provinciasRoutes from './routes/provincias.routes.js';
 import localidadesRoutes from './routes/localidades.routes.js';
 import turnosRoutes from './routes/turnos.routes.js';
 import prestacionesRoutes from './routes/prestaciones.routes.js';
+import horasDelDia from './routes/horas.routes.js';
+import listadeespera from './routes/listadeespera.routes.js'
 
 import cors from 'cors';
 
@@ -41,6 +43,8 @@ app.use(provinciasRoutes);
 app.use(localidadesRoutes);
 app.use(turnosRoutes);
 app.use(prestacionesRoutes);
+app.use(horasDelDia);
+app.use(listadeespera);
 
 
 

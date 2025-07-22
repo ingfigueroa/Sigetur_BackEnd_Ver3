@@ -1,4 +1,7 @@
-import {getConnection,sql} from '../database/connection.js';
+import {
+  getConnection,
+  sql
+} from '../database/connection.js';
 
 
 export const getTurnosCrear = async (req, res) => {
@@ -39,7 +42,7 @@ export const getTurnosCrear = async (req, res) => {
 
 export const getTurnosProfesionalFecha = async (req, res) => {
   try {
-   
+
     const {
       IDProf,
       Fecha
@@ -48,7 +51,7 @@ export const getTurnosProfesionalFecha = async (req, res) => {
     const pool = await getConnection();
     const request = pool.request();
     let result;
-   
+
 
 
     request.input('IDProf', sql.VarChar, IDProf);
@@ -66,70 +69,103 @@ export const getTurnosProfesionalFecha = async (req, res) => {
     return res.status(500).json({
       messaSge: 'Error en el servidor'
     });
-  } 
-}; 
+  }
+};
 
 
-
-export const getAgendaSemanalProfesionalFechaAgrupado = async (req, res) => {
+export const getTurnoID = async (req, res) => {
   try {
-    
-    const {
-      idprof,
-      fecha
-    } = req.query;
 
+    const {
+      idturno
+    } = req.query;
 
     const pool = await getConnection();
     const request = pool.request();
     let result;
-    
-    request.input('idprofesional', sql.Int, idprof);
-    request.input('fechaInicio', sql.Date, fecha);
-
-    
-    result = await request.execute('sp_agenda_semanal_proxima_semana');
-    
-    return res.json(result.recordset);
-   
-
-  } catch (error) {
-   
-    return res.status(500).json({
-      messaSge: 'Error en el servidor'
-    });
-  } 
-}; 
-
-export const getAgendaSemanalProfesionalFecha = async (req, res) => {
-  try {
-    
-    const {
-      idprof,
-      fecha
-    } = req.query;
 
 
-    const pool = await getConnection();
-    const request = pool.request();
-    let result;
-    
-    request.input('idprofesional', sql.Int, idprof);
-    request.input('fechaInicio', sql.Date, fecha);
 
-    
-    result = await request.execute('sp_agenda_semanal_turnos_x_horario_x_profesional');
-    
-    return res.json(result.recordset);
-   
+    request.input('idturno', sql.Int, idturno);
+
+
+    result = await request.execute('sp_Buscar_Turno_ID');
+
+
+
+    //return res.json(result.recordset);
+    return res.json(result.recordset[0] || null);
+
 
   } catch (error) {
     console.error('Error en la ejecución del procedimiento almacenado:', error);
     return res.status(500).json({
       messaSge: 'Error en el servidor'
     });
-  } 
-}; 
+  }
+};
+
+
+
+export const getAgendaSemanalProfesionalFechaAgrupado = async (req, res) => {
+  try {
+
+    const {
+      idprof,
+      fecha
+    } = req.query;
+
+
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+
+    request.input('idprofesional', sql.Int, idprof);
+    request.input('fechaInicio', sql.Date, fecha);
+
+
+    result = await request.execute('sp_agenda_semanal_proxima_semana');
+
+    return res.json(result.recordset);
+
+
+  } catch (error) {
+
+    return res.status(500).json({
+      messaSge: 'Error en el servidor'
+    });
+  }
+};
+
+export const getAgendaSemanalProfesionalFecha = async (req, res) => {
+  try {
+
+    const {
+      idprof,
+      fecha
+    } = req.query;
+
+
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+
+    request.input('idprofesional', sql.Int, idprof);
+    request.input('fechaInicio', sql.Date, fecha);
+
+
+    result = await request.execute('sp_agenda_semanal_turnos_x_horario_x_profesional');
+
+    return res.json(result.recordset);
+
+
+  } catch (error) {
+    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    return res.status(500).json({
+      messaSge: 'Error en el servidor'
+    });
+  }
+};
 
 export const getTurnosBuscarProfesionalDiaCancelado = async (req, res) => {
   try {
@@ -142,7 +178,7 @@ export const getTurnosBuscarProfesionalDiaCancelado = async (req, res) => {
     const request = pool.request();
     let result;
 
- 
+
 
 
     request.input('idprofesional', sql.VarChar, idprof);
@@ -256,7 +292,7 @@ export const putTurnosAnularPorPedidoProfesional = async (req, res) => {
     const request = pool.request();
     let result;
 
- 
+
 
     request.input('idprofesional', sql.Int, idprofesional);
     request.input('observaciones', sql.VarChar, observaciones);
@@ -264,17 +300,17 @@ export const putTurnosAnularPorPedidoProfesional = async (req, res) => {
     request.input('idusuario', sql.Int, idusuario);
     request.output('salida', sql.VarChar);
 
-    
 
-   
-   
+
+
+
 
 
     result = await request.execute('sp_turno_anular_todos_por_dia');
     const salida = result.output.salida;
-   
+
     return res.status(201).json({
-      
+
       message: 'Turnos anulados exitosamente',
 
     });
@@ -285,7 +321,7 @@ export const putTurnosAnularPorPedidoProfesional = async (req, res) => {
     }, error);
   }
 };
- 
+
 
 
 
@@ -333,19 +369,32 @@ export const putTurnosCambiarEstados = async (req, res) => {
       message: 'Error en el servidor'
     });
   }
-}   
+}
+
 export const getTurnosConsultasPorFecha = async (req, res) => {
   try {
-    const { fechadesde, fechahasta, idprofesion, idestado } = req.query;
-    
+    const {
+      fechadesde,
+      fechahasta,
+      idprofesion,
+      idestado,
+      pagina,
+      cantidadPorPagina
+    } = req.query;
+
+    const page = parseInt(pagina) || 1;
+    const limit = parseInt(cantidadPorPagina) || 20;
+    const offset = (page - 1) * limit;
 
     // Validación rápida
     if (!fechadesde || !fechahasta) {
       console.log('Fechas no válidas:', fechadesde, fechahasta);
-      return res.status(400).json({ message: 'Fechas requeridas' });
-    } 
+      return res.status(400).json({
+        message: 'Fechas requeridas'
+      });
+    }
 
-  
+
 
     const pool = await getConnection();
     const request = pool.request();
@@ -354,10 +403,18 @@ export const getTurnosConsultasPorFecha = async (req, res) => {
     request.input('fechahasta', sql.Date, fechahasta);
     request.input('idprofesion', sql.Int, idprofesion);
     request.input('idestado', sql.Int, idestado);
+    request.input('Offset', sql.Int, offset);
+    request.input('Limit', sql.Int, limit);
+
+
 
     const result = await request.execute('sp_Consulta_Turnos_Por_Fecha');
 
-    return res.json(result.recordset);
+    /* return res.json(result.recordset); */
+    return res.json({
+      total: result.recordsets[0][0].Total,
+      registros: result.recordsets[1]
+    });
 
   } catch (error) {
     console.error('Error en la ejecución del procedimiento almacenado:', error);
