@@ -12,9 +12,17 @@ import turnosRoutes from './routes/turnos.routes.js';
 import prestacionesRoutes from './routes/prestaciones.routes.js';
 import horasDelDia from './routes/horas.routes.js';
 import listadeespera from './routes/listadeespera.routes.js'
+import mediosdepagos from './routes/mediosdepagos.routes.js'
+import intervalosRoutes from './routes/intervalos.routes.js'
+import diassemanaRoutes from './routes/diassemana.routes.js'
+
 
 import cors from 'cors';
 
+import dotenv from 'dotenv'; 
+//dotenv.config();
+
+//console.log("ENV desde app.js:", process.env.GMAIL_APP_PASSWORD);
 
 const app = express()
 
@@ -24,10 +32,17 @@ app.get('/', (req,res) =>{
 
 
 app.use(cors({
-  origin: 'http://localhost:5173',  // Permite solicitudes desde tu origen específico
+  origin: [
+    'http://localhost:5173',
+    //'http://192.168.100.2:5173'
+  ],
   methods: ['GET', 'POST', 'PUT'],          // Permite solo métodos GET y POST, por ejemplo
   allowedHeaders: ['Content-Type'],  // Permite solo ciertos encabezados
 }));
+
+
+
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -45,6 +60,13 @@ app.use(turnosRoutes);
 app.use(prestacionesRoutes);
 app.use(horasDelDia);
 app.use(listadeespera);
+app.use(mediosdepagos);
+app.use(intervalosRoutes);
+app.use(diassemanaRoutes);
+
+
+
+
 
 
 

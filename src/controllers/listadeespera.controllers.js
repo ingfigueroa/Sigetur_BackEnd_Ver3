@@ -1,7 +1,40 @@
 import {
   getConnection,
   sql
-} from '../database/connection.js'
+} from '../database/connection.js';
+
+
+export const putAsignarTurnoListaDeEspera = async (req, res) => {
+  
+  const { 
+     idlistadeespera,
+     idturno,
+     idpac,
+     idos,
+     obs,
+     idusuario  } = req.body || {};
+
+     
+
+  try {
+    const pool = await getConnection();
+    const request = pool.request();
+   
+      request.input("idlistadeespera", sql.Int, idlistadeespera)
+      request.input("idturno", sql.Int, idturno)
+      request.input("idpac", sql.Int, idpac)
+      request.input("idos", sql.Int, idos)
+      request.input("obs", sql.VarChar(250), obs)
+      request.input("idusuario", sql.Int, idusuario)
+
+    const result = await request.execute("sp_listadeespera_actualizar_idturno");
+
+    res.status(200).json({ message: "Turno asignado correctamente" });
+  } catch (error) {
+    console.error("Error en putAsignarTurnoListaDeEspera:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
 
 export const postListaDeEspera = async (req, res) => {

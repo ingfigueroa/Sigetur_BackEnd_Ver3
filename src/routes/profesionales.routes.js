@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { createProfesionales, getProfesionales, getProfesionalProfesion, getProfesionalesHorarios,getProfesionalBuscarID } from '../controllers/profesionales.controllers.js';
+import { createProfesionales, getProfesionales, getProfesionalProfesion, getProfesionalesHorarios,getProfesionalBuscarID, putProfesionalPasaraPasivo, getProfesionalFechaCambioHorario, putProfesionalCambioHorarioMultiple } from '../controllers/profesionales.controllers.js';
 
 const router = Router();
 
@@ -14,6 +14,11 @@ router.post("/profesionales", createProfesionales);
 
 router.get("/profesionalid", getProfesionalBuscarID);
 
+router.put("/profesional/baja", putProfesionalPasaraPasivo)
+
+router.get("/profesional/fechacambiohorario", getProfesionalFechaCambioHorario)
+
+router.post("/profesional/cambiohorariomultiple", putProfesionalCambioHorarioMultiple)
 
 
 export default router;
