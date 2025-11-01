@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getObrasSociales, getObrasSocialesPorPaciente } from '../controllers/obrassociales.controllers.js';
+import { getObrasSociales, getObrasSocialesPorPaciente, putObraSocialAsignarPaciente, putObraSocialDesafectarPaciente, putObraSocialActivar } from '../controllers/obrassociales.controllers.js';
 
 const router = express.Router();
 
@@ -8,7 +8,13 @@ const router = express.Router();
 router.get('/obrassociales', getObrasSociales);
 
 // Ruta para obtener obras sociales de un paciente específico
-router.get('/obrassociales/pacienteos', getObrasSocialesPorPaciente);
+router.get('/obrassociales/paciente', getObrasSocialesPorPaciente);
+
+router.put('/obrassociales/asignarapaciente', putObraSocialAsignarPaciente)
+
+router.put('/obrassociales/desafectarapaciente', putObraSocialDesafectarPaciente)
+
+router.put ('/obrassociales/activar', putObraSocialActivar)
 
 
 
