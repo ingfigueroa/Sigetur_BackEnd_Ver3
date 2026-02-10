@@ -55,12 +55,12 @@ export const getPacientes = async (req, res) => {
     }); // Enviar un mensaje de error al cliente
   }
 };
-
+ 
 
 export const createPacientes = async (req, res) => {
 
   const {
-    idpaciente,
+    
     Nombres,
     Apellido,
     TipoDocumento,
@@ -69,8 +69,7 @@ export const createPacientes = async (req, res) => {
     FechaNacimiento,
     TECelular,
     Sexo,
-    idusuario,
-    nuevo
+    idusuario
   } = req.body || {};
 
   try {
@@ -82,7 +81,7 @@ export const createPacientes = async (req, res) => {
 
     /*  Los nombres de los paràmetros tienen que coincidir con estan definidos en el proce almacenado
     console.log('Profesional registrado exitosamente'); */
-    request.input('idpaciente', sql.Int, idpaciente);
+    
     request.input('Nombres', sql.VarChar, Nombres);
     request.input('Apellido', sql.VarChar, Apellido);
     request.input('TipoDocumento', sql.Int, TipoDocumento);
@@ -92,7 +91,7 @@ export const createPacientes = async (req, res) => {
     request.input('TECelular', sql.VarChar, TECelular);
     request.input('Sexo', sql.Int, Sexo);
     request.input('idusuario', sql.Int, idusuario);
-    request.input('Nuevo', sql.Int, nuevo);
+  
 
 
     request.output('RETORNO', sql.Int);

@@ -16,6 +16,8 @@ import mediosdepagos from './routes/mediosdepagos.routes.js'
 import intervalosRoutes from './routes/intervalos.routes.js'
 import diassemanaRoutes from './routes/diassemana.routes.js'
 
+import hcRoutes from './routes/hc.routes.js'
+
 
 import cors from 'cors';
 
@@ -63,6 +65,7 @@ app.use(listadeespera);
 app.use(mediosdepagos);
 app.use(intervalosRoutes);
 app.use(diassemanaRoutes);
+app.use(hcRoutes);
 
 
 

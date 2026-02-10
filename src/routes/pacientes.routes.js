@@ -11,6 +11,6 @@ router.post("/pacienteadd", createPacientes);
 router.get("/pacienteid", getPacienteBuscarID);
 
 router.get("/pacientesultimosturnos", getPacienteTurnosUltimos);
-
+ 
 
 export default router;
