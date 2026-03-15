@@ -13,18 +13,12 @@ import prestacionesRoutes from './routes/prestaciones.routes.js';
 import horasDelDia from './routes/horas.routes.js';
 import listadeespera from './routes/listadeespera.routes.js'
 import mediosdepagos from './routes/mediosdepagos.routes.js'
-import intervalosRoutes from './routes/intervalos.routes.js'
+import intervalosRoutes from './routes/intervalos.routes.js' 
 import diassemanaRoutes from './routes/diassemana.routes.js'
-
+ 
 import hcRoutes from './routes/hc.routes.js'
-
-
 import cors from 'cors';
 
-import dotenv from 'dotenv'; 
-//dotenv.config();
-
-//console.log("ENV desde app.js:", process.env.GMAIL_APP_PASSWORD);
 
 const app = express()
 
