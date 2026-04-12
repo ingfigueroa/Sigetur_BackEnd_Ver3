@@ -17,7 +17,14 @@ import intervalosRoutes from './routes/intervalos.routes.js'
 import diassemanaRoutes from './routes/diassemana.routes.js'
  
 import hcRoutes from './routes/hc.routes.js'
+import correosRoutes from './routes/correos.routes.js';
+import clientesRoutes from './routes/clientes.routes.js';
+
 import cors from 'cors';
+
+import dotenv from "dotenv";
+
+dotenv.config({ path: "./varentorno.env" });
 
 
 const app = express()
@@ -60,6 +67,8 @@ app.use(mediosdepagos);
 app.use(intervalosRoutes);
 app.use(diassemanaRoutes);
 app.use(hcRoutes);
+app.use(correosRoutes);
+app.use(clientesRoutes);
 
 
 

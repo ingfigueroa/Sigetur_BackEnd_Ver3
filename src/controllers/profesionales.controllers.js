@@ -50,7 +50,8 @@ export const getProfesionales = async (req, res) => {
     }
 
 
-   // return res.json(result.recordset);
+   
+   
    return res.json({
       total: result.recordsets[0][0].Total,
       registros: result.recordsets[1]

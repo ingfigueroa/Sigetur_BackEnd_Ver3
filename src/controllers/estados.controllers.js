@@ -12,8 +12,10 @@ export const getEstados = async (req, res) => {
       const request = pool.request();
       let result;
       
-      result = await request.execute('sp_Buscar_Estados');
+      result = await request.execute('sp_Buscar_Estados_x_turnos');
+
       return res.json(result.recordset);
+
       
     } catch (error) {
       console.error('Error en la ejecución del procedimiento almacenado:', error);

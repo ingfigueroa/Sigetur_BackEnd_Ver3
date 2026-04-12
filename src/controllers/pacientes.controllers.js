@@ -32,6 +32,7 @@ export const getPacientes = async (req, res) => {
       request.input('Limit', sql.Int, limit);
  
       result = await request.execute('sp_Buscar_Pacientes_Apellido');
+
     } else {
 
       let Apellido = '';
@@ -72,6 +73,7 @@ export const createPacientes = async (req, res) => {
     idusuario
   } = req.body || {};
 
+  console.log(req.body)
   try {
     const pool = await getConnection();
     const request = pool.request();
@@ -116,6 +118,57 @@ export const createPacientes = async (req, res) => {
   }
 };
 
+
+export const updatePacientes = async (req, res) => {
+
+  const {
+    
+    idpaciente,
+
+    Nombres,
+    Apellido,
+    TipoDocumento,
+    NroDocumento,
+    EMail,
+    fechaNacimiento,
+    TECelular,
+    idTipoSexoSelected
+  } = req.body || {};
+
+  try {
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+
+     request.input('idpaciente', sql.Int, idpaciente);
+    request.input('Nombres', sql.VarChar, Nombres);
+    request.input('Apellido', sql.VarChar, Apellido);
+    request.input('TipoDocumento', sql.Int, TipoDocumento);
+    request.input('NroDocumento', sql.Int, NroDocumento);
+    request.input('Email', sql.VarChar, EMail);
+    request.input('FechaNacimiento', sql.Date, fechaNacimiento);
+    request.input('TECelular', sql.VarChar, TECelular);
+    request.input('Sexo', sql.Int, idTipoSexoSelected);
+
+    result = await request.execute('sp_modificar_paciente');
+    // Recuperación de los valores de los parámetros de salida
+
+
+    res.status(201).json({
+      message: 'Paciente registrado exitosamente'
+     
+    });
+
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+    
+    return res.status(500).json({
+      message: (error.response?.data || error.message)
+    }); // Enviar un mensaje de error al cliente
+  }
+};
+
+
 export const getPacienteBuscarID = async (req, res) => {
   try {
 
@@ -135,6 +188,8 @@ export const getPacienteBuscarID = async (req, res) => {
       result = await request.execute('sp_Buscar_Pacientes_ID');
 
     }
+
+   
 
     if (result && result.recordset) {
       // Procesar los resultados

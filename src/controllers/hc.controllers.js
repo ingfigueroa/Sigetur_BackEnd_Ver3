@@ -84,7 +84,7 @@ export const createHCAnamnesisOdontologica = async (req, res) => {
 
  const data = req.body;
 
-  console.log("QUERY:", req.body);
+  
 
   try {
 
@@ -121,7 +121,7 @@ export const createHCOdontogramaFoto = async (req, res) => {
 
  const data = req.body; // Debe ser un array
 
- 
+  
  
   if (!Array.isArray(data) || data.length === 0) {
     return res.status(400).json({
@@ -166,7 +166,7 @@ export const createHCOdontogramaFoto = async (req, res) => {
       .input("NuevaFoto", tvp)
       .execute("dbo.sp_crear_hc_odontograma_foto_actual");
 
-      console.log("Foto odontograma registrada exitosamente")
+
     return res.status(201).json({
       message: "Foto odontograma registrada exitosamente"
        
@@ -177,6 +177,52 @@ export const createHCOdontogramaFoto = async (req, res) => {
 
     return res.status(500).json({
       message: "Error en el servidor"
+    });
+  }
+};
+
+
+export const createHCDiagnostico = async (req, res) => {
+
+
+
+  const {
+    idpaciente,
+    idprofesional,
+    idusuario,
+    diagnostico
+  } = req.body || {};
+
+
+       
+  try {
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+
+
+
+    /*  Los nombres de los paràmetros tienen que coincidir con estan definidos en el proce almacenado
+    console.log('Profesional registrado exitosamente'); */
+
+    request.input('idpaciente', sql.Int, idpaciente);
+    request.input('idprofesional', sql.Int, idprofesional);
+     request.input('idusuario', sql.Int, idusuario);
+    request.input('diagnostico', sql.NVarChar, diagnostico);
+   
+
+
+    result = await request.execute('sp_crear_hc_diagnostico');
+
+
+    res.status(201).json({
+      message: 'Historia clínica registrada exitosamente'
+
+    });
+  } catch (error) {
+    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    res.status(500).json({
+      message: 'Error en el servidor'
     });
   }
 };
@@ -314,6 +360,34 @@ export const getHCUltimaFoto = async (req, res) => {
 
     const result = await request.execute('sp_buscar_hc_odontograma_ultima_foto');
     
+    return res.json(result.recordsets); // ✅ enviar respuesta al cliente
+
+  } catch (error) {
+    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    return res.status(500).json({
+      message: 'Error en el servidor'
+    });
+  }
+};
+
+
+export const getHCDiagnostico = async (req, res) => {
+  try {
+  
+    
+    const {
+      idpaciente
+      
+    } = req.query;
+
+
+    const pool = await getConnection();
+    const request = pool.request();
+
+     request.input('idpaciente', sql.Int, idpaciente);
+
+    const result = await request.execute('sp_buscar_hc_diagnostico');
+
     return res.json(result.recordsets); // ✅ enviar respuesta al cliente
 
   } catch (error) {
