@@ -1,24 +1,35 @@
 import { Router } from "express";
 
-import { createProfesionales, getProfesionales, getProfesionalProfesion, getProfesionalesHorarios,getProfesionalBuscarID, putProfesionalPasaraPasivo, getProfesionalFechaCambioHorario, putProfesionalCambioHorarioMultiple } from '../controllers/profesionales.controllers.js';
+import {verificarTokenUsuario} from "../middleware/auth.js";
+
+import authorize from "../middleware/authorize.js";
+
+import ROLES from "../constants/roles.js";
+
+import { createProfesionales, getProfesionales, getProfesionalProfesion, getProfesionalesHorarios,getProfesionalBuscarID, putProfesionalPasaraPasivo, getProfesionalFechaCambioHorario, putProfesionalCambioHorarioMultiple, getIDProfesionalBuscarxEmail } from '../controllers/profesionales.controllers.js';
 
 const router = Router();
 
-router.get("/profesionales", getProfesionales);
+router.get("/profesionales",  verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]),  getProfesionales);
 
-router.get("/profesionaleshorarios", getProfesionalesHorarios);
 
-router.get("/profesionalesProfesionid", getProfesionalProfesion);
+router.get("/profesionaleshorarios", verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA, ROLES.PROFESIONAL]),  getProfesionalesHorarios);
 
-router.post("/profesionales", createProfesionales);
+router.get("/profesionalesProfesionid", verificarTokenUsuario, authorize(ROLES.ADMIN),getProfesionalProfesion);
+
+router.post("/profesionalesadd", authorize([ROLES.ADMIN, ROLES.SECRETARIA]), createProfesionales);
 
 router.get("/profesionalid", getProfesionalBuscarID);
 
-router.put("/profesional/baja", putProfesionalPasaraPasivo)
+router.get("/idprofesionalemail", getIDProfesionalBuscarxEmail);
 
-router.get("/profesional/fechacambiohorario", getProfesionalFechaCambioHorario)
+router.put("/profesional/baja", authorize([ROLES.ADMIN, ROLES.SECRETARIA]), putProfesionalPasaraPasivo)
 
-router.post("/profesional/cambiohorariomultiple", putProfesionalCambioHorarioMultiple)
+router.get("/profesional/fechacambiohorario", authorize([ROLES.ADMIN, ROLES.SECRETARIA]), getProfesionalFechaCambioHorario)
+
+router.post("/profesional/cambiohorariomultiple",authorize([ROLES.ADMIN, ROLES.SECRETARIA]),  putProfesionalCambioHorarioMultiple)
+
+//router.post("/passwordtransitoria", postCrearCliente);
 
 
 export default router;

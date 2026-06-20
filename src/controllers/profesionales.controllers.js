@@ -3,31 +3,49 @@ import {
   sql
 } from '../database/connection.js';
 
+import bcrypt from 'bcrypt';
+
+import { generarTokenHash, verificarToken } from '../utils/correo.js';
+import { tokenResetPassword} from '../controllers/correo.controllers.js'
+
+
+
 export const getProfesionales = async (req, res) => {
   try {
     const {
+      idcliente,
       Apellido,
       VarDni,
       idprofesion,
       pagina,
       cantidadPorPagina
     } = req.query;
+
+
   
     const page = parseInt(pagina) || 1;
     const limit = parseInt(cantidadPorPagina) || 20;
-    const offset = (page - 1) * limit;
+    let offset;
+
+    if (page > 1){
+         offset = (page - 1) * limit;
+    }else{
+       offset = page;
+    }
     
+  
     const pool = await getConnection();
     const request = pool.request();
     let result;
-
+  
     if (VarDni > 0) {
 
       request.input('Dni', sql.Int, VarDni);
         
-      result = await request.execute('sp_Buscar_Profesionales_Dni');
+      result = await request.execute('sp_Buscar_Profesional_Dni');
   
     } else if (Apellido != null && Apellido != '') {
+      request.input('idcliente', sql.Int, idcliente);
       request.input('Apellido', sql.VarChar, Apellido);
       request.input('Offset', sql.Int, offset);
       request.input('Limit', sql.Int, limit);
@@ -35,14 +53,16 @@ export const getProfesionales = async (req, res) => {
       
 
     } else if (idprofesion > 0) {
-
+       request.input('idcliente', sql.Int, idcliente);
       request.input('idprofesion', sql.Int, idprofesion);
       request.input('Offset', sql.Int, offset);
       request.input('Limit', sql.Int, limit);
       result = await request.execute('sp_Buscar_Profesionales_Profesion');
     } else {
-
-      let Apellido = '';
+    
+   
+      //let ApellidoVacio = '';
+       request.input('idcliente', sql.Int, idcliente);
       request.input('Apellido', sql.VarChar, Apellido);
       request.input('Offset', sql.Int, offset);
       request.input('Limit', sql.Int, limit);
@@ -50,8 +70,7 @@ export const getProfesionales = async (req, res) => {
     }
 
 
-   
-   
+ 
    return res.json({
       total: result.recordsets[0][0].Total,
       registros: result.recordsets[1]
@@ -76,6 +95,7 @@ export const getProfesionalesHorarios = async (req, res) => {
     const pool = await getConnection();
     const request = pool.request();
     let result;
+    console.log(fecha)  
 
 
     request.input('idprofesional', sql.Int, idprofesional);
@@ -130,11 +150,14 @@ export const getProfesionalProfesion = async (req, res) => {
     });
   }
 };
-
+ 
 
 export const createProfesionales = async (req, res) => {
+  const { token, hash } = generarTokenHash();
 
+  
   const {
+    idcliente,
     idProfesional,
     Nombres,
     Apellido,
@@ -151,16 +174,17 @@ export const createProfesionales = async (req, res) => {
     nuevo
   } = req.body || {};
 
+
+
   try {
     const pool = await getConnection();
     const request = pool.request();
     let result;
 
 
-
     /*  Los nombres de los paràmetros tienen que coincidir con estan definidos en el proce almacenado
     console.log('Profesional registrado exitosamente'); */
-
+    request.input('idcliente', sql.Int, idcliente);
     request.input('idprofesional', sql.Int, idProfesional);
     request.input('Nombres', sql.VarChar, Nombres);
     request.input('Apellido', sql.VarChar, Apellido);
@@ -174,17 +198,25 @@ export const createProfesionales = async (req, res) => {
     request.input('matprof', sql.VarChar, matriculanro);
     request.input('IDTipoProfesion', sql.Int, idtipoprofesion);
     request.input('idusuario', sql.Int, idusuario);
+    request.input('passwordtransitoria', sql.VarChar, hash )
     request.input('Nuevo', sql.Int, nuevo);
     request.output('Resultado', sql.Int)
 
+    
 
     result = await request.execute('sp_crear_profesional');
 
+    // 👇 agarrás el primer resultado
+    const data = result.recordset;
+   
+   
 
-    res.status(201).json({
-      message: 'Profesional registrado exitosamente'
-
+      res.status(201).json({
+      message: 'Profesional registrado exitosamente',
+     
     });
+
+
   } catch (error) {
     console.error('Error en la ejecución del procedimiento almacenado:', error);
     res.status(500).json({
@@ -193,9 +225,11 @@ export const createProfesionales = async (req, res) => {
   }
 };
 
+
 export const getProfesionalBuscarID = async (req, res) => {
   try {
     const {
+      idcliente,
       idprofesional
     } = req.query;
 
@@ -206,9 +240,47 @@ export const getProfesionalBuscarID = async (req, res) => {
 
 
     if (idprofesional > 0) {
-
+      request.input('idcliente', sql.Int, idcliente);
       request.input('idprofesional', sql.Int, idprofesional);
-      result = await request.execute('sp_Buscar_Profesionales_ID');
+      result = await request.execute('sp_Buscar_Profesional_ID');
+
+    }
+
+    if (result && result.recordset) {
+      // Procesar los resultados
+      return res.json(result.recordset);
+    } else {
+      console.error('No se obtuvieron resultados de la consulta.');
+    }
+
+
+
+  } catch (error) {
+    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    return res.status(500).json({
+      message: 'Error en el servidor'
+    });
+  }
+};
+export const getIDProfesionalBuscarxEmail = async (req, res) => {
+  try {
+    const {
+      email,
+      idcliente
+    } = req.query;
+
+ 
+
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+
+
+
+    if (idcliente > 0) {
+       request.input('email', sql.VarChar, email);
+      request.input('idcliente', sql.Int, idcliente);
+      result = await request.execute('sp_Buscar_idprofesional_idcliente_email');
 
     }
 
@@ -375,103 +447,4 @@ export const putProfesionalCambioHorarioMultiple = async (req, res) => {
     return res.status(500).json({ message: "Error en el servidor" });
   }
 };
-
-
-/* export const putProfesionalCambioHorarioMultiple = async (req, res) => {
-  try {
-    const pool = await getConnection();
-   console.log("Llega hasta aca")
-    // req.body es un array de objetos
-    for (const horario of req.body) {
-       console.log(horario)
-      const request = pool.request();
-      request.input('idprofesional', sql.Int, horario.idprofesional);
-      request.input('iddia', sql.Int, horario.iddia);
-      request.input('mananatrabaja', sql.Bit, horario.mananatrabaja);
-      request.input('idmananadesde', sql.Int, horario.idmananadesde);
-      request.input('idmananahasta', sql.Int, horario.idmananahasta);
-      request.input('idmananaintervalo', sql.Int, horario.idmananaintervalo);
-
-      request.input('tardetrabaja', sql.Bit, horario.tardetrabaja);
-      request.input('idtardedesde', sql.Int, horario.idtardedesde);
-      request.input('idtardehasta', sql.Int, horario.idtardehasta);
-      request.input('idtardeintervalo', sql.Int, horario.idtardeintervalo);
-
-      request.input('nochetrabaja', sql.Bit, horario.nochetrabaja);
-      request.input('idnochedesde', sql.Int, horario.idnochedesde);
-      request.input('idnochehasta', sql.Int, horario.idnochehasta);
-      request.input('idnocheintervalo', sql.Int, horario.idnocheintervalo);
-      request.input('fechadesde', sql.Date, horario.fechadesde);
-
-      await request.execute('sp_profesional_update_horarios');
-    }
-    console.log("Sale del for")
-    return res.status(201).json({ message: 'Horarios cargados con éxito.' });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Error en el servidor' });
-  }
-};
- */
-
-/* 
-export const putProfesionalCambioHorario = async (req, res) => {
-  try {
-    
-    const {
-        idprofesional,
-        iddia,
-        mañanatrabaja,
-        idmañanadesde,
-        idmañanahasta,
-        idmañanaintervalo,
-        tardetrabaja,
-        idtardedesde,
-        idtardehasta,
-        idtardeintervalo,
-        nochetrabaja,
-        idnochedesde,
-        idnochehasta,
-        idnocheintervalo,
-        fechadesde
-      
-    } = req.body || {}; 
-
-
-
-
-
-    const pool = await getConnection();
-    const request = pool.request();
-    let result;
-
-    request.input('idprofesional', sql.Int, idprofesional);
-     request.input('iddia', sql.Int, iddia);
-     request.input('idmañanatrabaja', sql.Bit, mañanatrabaja);
-     request.input('idmañanadesde', sql.Int, idmañanadesde);
-     request.input('idmañanahasta', sql.Int, idmañanahasta);
-     request.input('idmañanaintervalo', sql.Int, idmañanaintervalo);
-     request.input('tardetrabaja', sql.Bit, tardetrabaja);
-     request.input('idtardedesde', sql.Int, idtardedesde);
-     request.input('idtardehasta', sql.Int, idtardehasta);
-     request.input('idtardeintervalo', sql.Int, idtardeintervalo);
-     request.input('nochetrabaja', sql.Bit, nochetrabaja);
-     request.input('idnochedesde', sql.Int, idnochedesde);
-     request.input('idnochehasta', sql.Int, idnochehasta);
-     request.input('idnocheintervalo', sql.Int, idnocheintervalo);
-     request.input('fechadesde', sql.Date, fechadesde);
-     
-    result = await request.execute('sp_profesional_update_horarios');
-
-    return res.status(201).json({
-      message: 'Cambio de horario realizado con éxito.',
-
-    });
-  } catch (error) {
-
-    return res.status(500).json({
-      message: 'Error en el servidor'
-    }, error);
-  }
-}; */
 

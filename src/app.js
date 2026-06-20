@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from 'express';
 import estadosRoutes from './routes/estados.routes.js';
 import profesionalesRoutes from './routes/profesionales.routes.js';
@@ -20,35 +23,43 @@ import hcRoutes from './routes/hc.routes.js'
 import correosRoutes from './routes/correos.routes.js';
 import clientesRoutes from './routes/clientes.routes.js';
 
+import loginRoutes from './routes/login.routes.js';
+
 import cors from 'cors';
 
-import dotenv from "dotenv";
 
-dotenv.config({ path: "./varentorno.env" });
 
 
 const app = express()
 
 app.get('/', (req,res) =>{
-  res.send('Bienvenido a SIGETUR')
+  res.send('Bienvenido al sistema')
 })
 
 
+
+
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    //'http://192.168.100.2:5173'
-  ],
-  methods: ['GET', 'POST', 'PUT'],          // Permite solo métodos GET y POST, por ejemplo
-  allowedHeaders: ['Content-Type'],  // Permite solo ciertos encabezados
+  origin: "http://localhost:5173", // tu frontend
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 
 
 
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+//middlewares
+app.use(express.json()); //“Si llega información en formato JSON, interpretala y guardala en req.body
+app.use(express.urlencoded({ extended: true })); //Convierte los datos del formulario en req.body.
+//extended: true --- Permite enviar objetos complejos y estructuras anidadas. 
+//usuario[direccion][calle]=SanMartin 
+// se transforma en {
+ /*  usuario: {
+    direccion: {
+      calle: "SanMartin"
+    }
+  }
+} */
 
 app.use(estadosRoutes);
 app.use(profesionalesRoutes);
@@ -69,6 +80,7 @@ app.use(diassemanaRoutes);
 app.use(hcRoutes);
 app.use(correosRoutes);
 app.use(clientesRoutes);
+app.use(loginRoutes);
 
 
 

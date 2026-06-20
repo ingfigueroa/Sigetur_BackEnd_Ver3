@@ -6,11 +6,13 @@ import {
 export const getPacientes = async (req, res) => {
   try {
     const {
+      idcliente,
       Apellido,
       VarDni,
       pagina,
       cantidadPorPagina
     } = req.query;
+    console.log(idcliente)
 
     const page = parseInt(pagina) || 1;
     const limit = parseInt(cantidadPorPagina) || 20;
@@ -22,11 +24,11 @@ export const getPacientes = async (req, res) => {
     let result;
 
     if (VarDni > 0) {
-
+       request.input('idcliente', sql.Int, idcliente);
       request.input('DNI', sql.Int, VarDni);
       result = await request.execute('sp_Buscar_Pacientes_Dni');
     } else if (Apellido != null && Apellido != '') {
-
+      request.input('idcliente', sql.Int, idcliente);
       request.input('Apellido', sql.VarChar, Apellido);
       request.input('Offset', sql.Int, offset);
       request.input('Limit', sql.Int, limit);
@@ -36,6 +38,7 @@ export const getPacientes = async (req, res) => {
     } else {
 
       let Apellido = '';
+        request.input('idcliente', sql.Int, idcliente);
       request.input('Apellido', sql.VarChar, Apellido);
       request.input('Offset', sql.Int, offset);
       request.input('Limit', sql.Int, limit);
@@ -57,33 +60,34 @@ export const getPacientes = async (req, res) => {
   }
 };
  
-
 export const createPacientes = async (req, res) => {
-
-  const {
-    
-    Nombres,
-    Apellido,
-    TipoDocumento,
-    NroDocumento,
-    EMail,
-    FechaNacimiento,
-    TECelular,
-    Sexo,
-    idusuario
-  } = req.body || {};
-
-  console.log(req.body)
   try {
+
+    const {
+      idcliente,
+      Nombres,
+      Apellido,
+      TipoDocumento,
+      NroDocumento,
+      EMail,
+      FechaNacimiento,
+      TECelular,
+      Sexo,
+      idusuario
+    } = req.body;
+
+    console.log(req.body)
+    // VALIDACIONES
+    if (!Nombres || !Apellido) {
+      return res.status(400).json({
+        message: 'Nombres y apellido son obligatorios'
+      });
+    }
+
     const pool = await getConnection();
     const request = pool.request();
-    let result;
 
-
-
-    /*  Los nombres de los paràmetros tienen que coincidir con estan definidos en el proce almacenado
-    console.log('Profesional registrado exitosamente'); */
-    
+    request.input('idcliente', sql.Int, idcliente);
     request.input('Nombres', sql.VarChar, Nombres);
     request.input('Apellido', sql.VarChar, Apellido);
     request.input('TipoDocumento', sql.Int, TipoDocumento);
@@ -93,28 +97,25 @@ export const createPacientes = async (req, res) => {
     request.input('TECelular', sql.VarChar, TECelular);
     request.input('Sexo', sql.Int, Sexo);
     request.input('idusuario', sql.Int, idusuario);
-  
-
 
     request.output('RETORNO', sql.Int);
     request.output('Resultado', sql.Int);
 
-    result = await request.execute('sp_crear_paciente');
-    // Recuperación de los valores de los parámetros de salida
-    const retorno = result.output.RETORNO;
-    const resultado = result.output.Resultado;
+    const result = await request.execute('sp_crear_paciente');
 
-    res.status(201).json({
+    return res.status(201).json({
+      ok: true,
       message: 'Paciente registrado exitosamente',
-      retorno,
-      resultado
+      retorno: result.output.RETORNO,
+      resultado: result.output.Resultado
     });
 
   } catch (error) {
-    console.error('Error en la ejecución del procedimiento almacenado:', error);
+
     return res.status(500).json({
+      ok: false,
       message: 'Error en el servidor'
-    }); // Enviar un mensaje de error al cliente
+    });
   }
 };
 
@@ -173,6 +174,7 @@ export const getPacienteBuscarID = async (req, res) => {
   try {
 
     const {
+      idcliente,
       idpaciente
     } = req.query;
 
@@ -183,7 +185,8 @@ export const getPacienteBuscarID = async (req, res) => {
 
 
     if (idpaciente > 0) {
-
+      
+      request.input('idcliente', sql.Int, idcliente);
       request.input('idpaciente', sql.Int, idpaciente);
       result = await request.execute('sp_Buscar_Pacientes_ID');
 
@@ -193,12 +196,13 @@ export const getPacienteBuscarID = async (req, res) => {
 
     if (result && result.recordset) {
       // Procesar los resultados
+     
       return res.json(result.recordset);
     } else {
       console.error('No se obtuvieron resultados de la consulta. Buscar por ID');
     }
 
-
+  
 
   } catch (error) {
     console.error('Error en la ejecución del procedimiento almacenado:', error);
@@ -213,6 +217,7 @@ export const getPacienteTurnosUltimos = async (req, res) => {
   try {
 
     const {
+      idcliente,
       idpaciente
     } = req.query;
 
@@ -221,20 +226,33 @@ export const getPacienteTurnosUltimos = async (req, res) => {
     let result;
 
 
+if (idpaciente > 0) {
 
-    if (idpaciente > 0) {
+  request.input('idcliente', sql.Int, idcliente);
+  request.input('idpaciente', sql.Int, idpaciente);
 
-      request.input('idpaciente', sql.Int, idpaciente);
-      result = await request.execute('sp_Buscar_Turnos_Paciente_Ultimos');
+  result = await request.execute('sp_Buscar_Turnos_Paciente_Ultimos');
 
-    }
+}
 
-    if (result && result.recordset) {
-      // Procesar los resultados
-      return res.json(result.recordset);
-    } else {
-      console.error('No se obtuvieron resultados de la consulta. Ultimos Turnos');
-    }
+if (result) {
+
+  // Primer SELECT
+  const total = result.recordsets[0];
+
+  // Segundo SELECT
+  const turnos = result.recordsets[1];
+
+  return res.json({
+    total: total[0]?.total || 0,
+    registros: turnos
+  });
+
+} else {
+
+  console.error('No se obtuvieron resultados de la consulta.');
+
+}
 
 
 

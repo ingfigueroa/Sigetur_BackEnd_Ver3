@@ -10,18 +10,20 @@ export const getTurnosCrear = async (req, res) => {
     const {
       idusuario,
       fecha,
-      idprof
+      idprofesional,
+      idcliente
     } = req.query;
 
     const pool = await getConnection();
     const request = pool.request();
     let result;
 
-
+   
 
     request.input('IDUsuario', sql.Int, idusuario);
-    request.input('IDProf', sql.Int, idprof);
-    request.input('Fecha', sql.Date, fecha);
+    request.input('idprofesional', sql.Int, idprofesional);
+    request.input('fecha', sql.Date, fecha);
+    request.input('idcliente', sql.Int, idcliente);
 
 
 
@@ -45,6 +47,7 @@ export const postSobreturnosCrear = async (req, res) => {
 
 
     const {
+      idcliente,
       idprofesional,
       idpaciente,
       idobrasocial,
@@ -64,7 +67,7 @@ export const postSobreturnosCrear = async (req, res) => {
 
 
 
-
+     request.input('idcliente', sql.Int, idcliente);
     request.input('idprofesional', sql.Int, idprofesional);
     request.input('idpaciente', sql.Int, idpaciente);
     request.input('idobrasocial', sql.Int, idobrasocial);
@@ -90,8 +93,9 @@ export const getTurnosProfesionalFecha = async (req, res) => {
   try {
 
     const {
-      IDProf,
-      Fecha
+      idprofesional,
+      fecha,
+      idcliente
     } = req.query;
 
     const pool = await getConnection();
@@ -99,9 +103,9 @@ export const getTurnosProfesionalFecha = async (req, res) => {
     let result;
 
 
-
-    request.input('IDProf', sql.VarChar, IDProf);
-    request.input('Fecha', sql.Date, Fecha);
+     request.input('idcliente', sql.Int, idcliente);
+    request.input('IDProf', sql.Int, idprofesional);
+    request.input('Fecha', sql.Date, fecha);
 
     result = await request.execute('sp_Buscar_Turno_Profesional_Fecha');
 
@@ -109,7 +113,7 @@ export const getTurnosProfesionalFecha = async (req, res) => {
 
     return res.json(result.recordset);
 
-
+  
   } catch (error) {
     console.error('Error en la ejecución del procedimiento almacenado:', error);
     return res.status(500).json({
@@ -117,7 +121,7 @@ export const getTurnosProfesionalFecha = async (req, res) => {
     });
   }
 };
-
+ 
 
 export const getTurnoID = async (req, res) => {
   try {
@@ -175,7 +179,7 @@ export const getTurnoLibreID = async (req, res) => {
 
 
   } catch (error) {
-    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    
     return res.status(500).json({
       messaSge: 'Error en el servidor'
     });
@@ -248,9 +252,12 @@ export const getAgendaSemanalProfesionalFecha = async (req, res) => {
 export const getTurnosBuscarProfesionalDiaCancelado = async (req, res) => {
   try {
     const {
-      idprof,
+      idcliente,
+      idprofesional,
       fecha
     } = req.query;
+
+
 
     const pool = await getConnection();
     const request = pool.request();
@@ -258,13 +265,13 @@ export const getTurnosBuscarProfesionalDiaCancelado = async (req, res) => {
 
 
 
-
-    request.input('idprofesional', sql.VarChar, idprof);
+    request.input('idcliente', sql.Int, idcliente);
+    request.input('idprofesional', sql.Int, idprofesional);
     request.input('fecha', sql.Date, fecha);
 
 
 
-    result = await request.execute('sp_Buscar_turnos_profesional_dia_cancelado');
+    result = await request.execute('sp_Buscar_turnos_profesional_dia_cancelado'); 
 
 
 
@@ -316,11 +323,12 @@ export const getEstadosPorTurno = async (req, res) => {
 export const putTurnosPasaraPendiente = async (req, res) => {
   try {
     const {
-      IDTurno,
-      IDPac,
-      IDOS,
+    
+      idturno,
+      idpaciente,
+      idos,
       Obs,
-      IDUsuario
+      idusuario
     } = req.body || {};
 
 
@@ -331,17 +339,18 @@ export const putTurnosPasaraPendiente = async (req, res) => {
     const request = pool.request();
     let result;
 
-    request.input('IDTurno', sql.Int, IDTurno);
-    request.input('IDPac', sql.Int, IDPac);
-    request.input('IDOS', sql.Int, IDOS);
+  
+    request.input('idturno', sql.Int, idturno);
+    request.input('idpaciente', sql.Int, idpaciente);
+    request.input('idobrasocial', sql.Int, idos);
     request.input('Obs', sql.VarChar, Obs);
-    request.input('IDUsuario', sql.Int, IDUsuario);
+    request.input('idusuario', sql.Int, idusuario);
     request.output('Resultado', sql.Int);
 
 
     result = await request.execute('sp_turno_transitar_pendiente');
 
-
+ 
 
     return res.status(201).json({
       message: 'Profesional registrado exitosamente',
@@ -359,6 +368,7 @@ export const putTurnosPasaraPendiente = async (req, res) => {
 export const putTurnosAnularPorPedidoProfesional = async (req, res) => {
   try {
     const {
+      idcliente,
       idprofesional,
       observaciones,
       fecha,
@@ -372,15 +382,12 @@ export const putTurnosAnularPorPedidoProfesional = async (req, res) => {
 
 
 
+    request.input('idcliente', sql.Int, idcliente);
     request.input('idprofesional', sql.Int, idprofesional);
     request.input('observaciones', sql.VarChar, observaciones);
     request.input('fecha', sql.Date, fecha);
     request.input('idusuario', sql.Int, idusuario);
     request.output('salida', sql.VarChar);
-
-
-
-
 
 
 
@@ -406,10 +413,11 @@ export const putTurnosAnularPorPedidoProfesional = async (req, res) => {
 export const putTurnosCambiarEstados = async (req, res) => {
   try {
     const {
-      IDTurno,
+    
+      idturno,
       idestado,
-      Observaciones,
-      IDUsuario,
+      observaciones,
+      idusuario,
       vieneDE
     } = req.body || {};
 
@@ -418,33 +426,33 @@ export const putTurnosCambiarEstados = async (req, res) => {
     const request = pool.request();
     let result;
 
-
+ 
 
     //pasar PRESENTE NO COBRADO
     if (idestadoparseado === 7) {
 
-      console.log(vieneDE)
-      if (vieneDE === "PNC") {
+  
+      if (vieneDE === "PNC") {//PRESENTE NO COBRADO
 
-        console.log(IDTurno)
-        console.log(idestado)
-        console.log(Observaciones)
-        console.log(IDUsuario)
-
-        request.input('IDTurno', sql.Int, IDTurno);
+       
+      
+        request.input('idturno', sql.Int, idturno);
         request.input('estado', sql.Int, idestado);
-        request.input('Observaciones', sql.VarChar, Observaciones);
-        request.input('IDUsuario', sql.Int, IDUsuario);
+        request.input('observaciones', sql.VarChar, observaciones);
+        request.input('idusuario', sql.Int, idusuario);
         result = await request.execute('sp_turno_transitar_presente');
 
-      } else if (vieneDE == "ANULAR") {
+      } else if (vieneDE === "ANULAR") {
+       
 
-        request.input('IDTurno', sql.Int, IDTurno);
-        request.input('Observaciones', sql.VarChar, Observaciones);
-        request.input('IDUsuario', sql.Int, IDUsuario);
+       
+        request.input('idturno', sql.Int, idturno);
+        request.input('observaciones', sql.VarChar, observaciones);
+        request.input('idusuario', sql.Int, idusuario);
 
         result = await request.execute('sp_turno_transitar_anulado');
       }
+     
     }
 
     res.status(200).json({
@@ -452,6 +460,8 @@ export const putTurnosCambiarEstados = async (req, res) => {
     });
 
   } catch (error) {
+     console.log("ERROR: " + error)
+     
     // Aquí ocurrió un error, asegúrate de usar res.status antes de enviar un objeto JSON
     res.status(500).json({
       message: 'Error en el servidor'
@@ -517,6 +527,7 @@ export const getTurnosConsultasPorFecha = async (req, res) => {
 export const getTurnosLibresProfesional_Falta_Mes = async (req, res) => {
   try {
     const {
+      idcliente,
       idprofesional,
       fechadesde,
       fechahasta
@@ -536,11 +547,12 @@ export const getTurnosLibresProfesional_Falta_Mes = async (req, res) => {
       });
     }
 
-
+ 
 
     const pool = await getConnection();
     const request = pool.request();
 
+    request.input('idcliente', sql.Int, idcliente);
     request.input('idprofesional', sql.Int, idprofesional);
     request.input('fechainicio', sql.Date, fechadesde);
     request.input('fechafinal', sql.Date, fechahasta);

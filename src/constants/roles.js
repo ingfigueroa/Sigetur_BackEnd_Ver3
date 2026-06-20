@@ -1,0 +1,7 @@
+const ROLES = {
+  ADMIN: 'ADMINISTRADOR',
+  SECRETARIA: 'SECRETARIA',
+  PROFESIONAL: 'PROFESIONAL'
+};
+
+export default ROLES;

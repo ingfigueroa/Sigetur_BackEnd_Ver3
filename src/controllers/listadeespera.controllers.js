@@ -12,26 +12,34 @@ export const putAsignarTurnoListaDeEspera = async (req, res) => {
      idpac,
      idos,
      obs,
-     idusuario  } = req.body || {};
+     idusuario  } = req.body ;
 
      
 
   try {
     const pool = await getConnection();
     const request = pool.request();
-   
+
+      console.log(idlistadeespera)
+      console.log(idturno)
+      console.log(idpac)
+      console.log(idos)
+      console.log(obs)
+      console.log(idusuario)
+
+
       request.input("idlistadeespera", sql.Int, idlistadeespera)
       request.input("idturno", sql.Int, idturno)
-      request.input("idpac", sql.Int, idpac)
+      request.input("idpaciente", sql.Int, idpac)
       request.input("idos", sql.Int, idos)
-      request.input("obs", sql.VarChar(250), obs)
+      request.input("obs", sql.VarChar, obs)
       request.input("idusuario", sql.Int, idusuario)
 
     const result = await request.execute("sp_listadeespera_actualizar_idturno");
 
     res.status(200).json({ message: "Turno asignado correctamente" });
   } catch (error) {
-    console.error("Error en putAsignarTurnoListaDeEspera:", error);
+    
     res.status(500).json({ error: error.message });
   }
 };
@@ -39,7 +47,9 @@ export const putAsignarTurnoListaDeEspera = async (req, res) => {
 
 export const postListaDeEspera = async (req, res) => {
   try {
+    
     const {
+      idcliente,
       idprofesional,
       idpaciente,
       idhoradesde,
@@ -56,11 +66,17 @@ export const postListaDeEspera = async (req, res) => {
       observaciones,
       idusuario
     } = req.body;
+  
+       
+
 
    
     const pool = await getConnection();
     const request = pool.request();
 
+ 
+
+     request.input('idcliente', sql.Int, idcliente);
     request.input('IDProfesional', sql.Int, idprofesional);
     request.input('IDPaciente', sql.Int, idpaciente);
     request.input('IDHoraDesde', sql.Int, idhoradesde);
@@ -90,7 +106,7 @@ export const postListaDeEspera = async (req, res) => {
 
 
   } catch (error) {
-    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    console.log(error)
     return res.status(500).json({
       message: 'Error en el servidor'
     });
@@ -121,7 +137,7 @@ export const postBajaFilaListaDeEspera = async (req, res) => {
 
 
   } catch (error) {
-    console.error('Error en la ejecución del procedimiento almacenado:', error);
+   
     return res.status(500).json({
       message: 'Error en el servidor'
     });
@@ -136,7 +152,8 @@ export const getListadeEspera = async (req, res) => {
       pagina,
       cantidadPorPagina,
       apellidoPaciente,
-      apellidoProfesional 
+      apellidoProfesional,
+      idcliente
     } = req.query;
 
     const page = parseInt(pagina) || 1;
@@ -146,7 +163,9 @@ export const getListadeEspera = async (req, res) => {
     const pool = await getConnection();
     const request = pool.request();
     let result;
-  
+    
+
+    request.input( 'idcliente', sql.Int, idcliente);
       request.input( 'ApellidoPaciente', sql.VarChar, apellidoPaciente );
     request.input( 'ApellidoProfesional', sql.VarChar, apellidoProfesional);
     request.input( 'Offset', sql.Int, offset);
@@ -157,13 +176,13 @@ export const getListadeEspera = async (req, res) => {
 
     /*  return res.json(result.recordset); */
     return res.json({
-      total: result.recordsets[0][0].Total,
+      total: result.recordsets[0][0].Total, 
       registros: result.recordsets[1]
     });
 
 
   } catch (error) {
-    console.error('Error en la ejecución del procedimiento almacenado:', error);
+   
     return res.status(500).json({
       message: 'Error en el servidor'
     }); // Enviar un mensaje de error al cliente

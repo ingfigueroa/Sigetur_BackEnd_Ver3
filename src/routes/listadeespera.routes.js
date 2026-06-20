@@ -7,6 +7,6 @@ const router = Router();
 router.get("/listadeesperalistar", getListadeEspera);
 router.post("/listadeesperaalta", postListaDeEspera);
 router.post("/listadeesperabajafila", postBajaFilaListaDeEspera);
-router.put("/listadeesperaasignarturno", putAsignarTurnoListaDeEspera);
+router.post("/listadeesperaasignarturno", putAsignarTurnoListaDeEspera);
 
 export default router;

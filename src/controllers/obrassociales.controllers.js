@@ -1,44 +1,22 @@
 import {getConnection, sql} from '../database/connection.js';
 
 
-/* export const getObrasSocialesPorPaciente = async (req, res) => {
-  
-  const { idPaciente } = req.query;  // Se obtiene el idPaciente desde los parámetros de la ruta
-
- 
-  
-  try {
-      const pool = await getConnection();
-      const request = pool.request();
-      let result;
-
-      
-      request.input('idpaciente', sql.Int, idPaciente);
- 
-      result = await request.execute('sp_obras_sociales_por_paciente');
-    console.log("Resultado SP:", result);
-    return res.json(result.recordset);
-    
-  } catch (error) {
-    console.error('Error en la ejecución del procedimiento almacenado:', error);
-    return res.status(500).json({ message: 'Error en el servidor' }); // Enviar un mensaje de error al cliente
-  } 
-}; */
 
 // controlador en tu backend
 
 
 export const getObrasSocialesPorPaciente = async (req, res) => {
   try {
-    const { idpaciente } = req.query; // viene de ?idPaciente=2304
-    
+    const { idcliente, idpaciente } = req.query; // viene de ?idPaciente=2304
+
     const pool = await getConnection();
     const result = await pool
       .request()
+      .input("idcliente", sql.Int, idcliente) 
       .input("idpaciente", sql.Int, idpaciente) // tiene que coincidir exacto
-      .execute("sp_obras_sociales_por_paciente");
+      .execute("sp_buscar_obras_sociales_por_paciente");
 
-  
+    
     res.json(result.recordset); // devolvés solo el recordset
   } catch (error) {
     console.error("Error ejecutando SP:", error);
@@ -96,20 +74,23 @@ try {
 export const putObraSocialDesafectarPaciente = async (req, res) => {
  try {
   const {
+    idcliente,
     idpaciente,
     idobrasocial,
     idusuario
    
   } = req.body || {};
-
+    console.log(idcliente)
+    console.log(idpaciente)
+    console.log(idusuario)
   
     const pool = await getConnection();
     const request = pool.request();
     let result;
     const altabaja = 0;
+ 
 
-
-
+     request.input('idcliente', sql.Int, idcliente);
     request.input('idpaciente', sql.Int, idpaciente);
     request.input('idobrasocial', sql.Int, idobrasocial);
     request.input('altabaja', sql.Bit, altabaja);
@@ -138,6 +119,7 @@ export const putObraSocialAsignarPaciente = async (req, res) => {
 
  try {
   const {
+    idcliente,
     idpaciente,
     idobrasocial,
     
@@ -152,13 +134,13 @@ export const putObraSocialAsignarPaciente = async (req, res) => {
     const altabaja = 1;
 
     
-
+    request.input('idcliente', sql.Int, idcliente);
     request.input('idpaciente', sql.Int, idpaciente);
     request.input('idobrasocial', sql.Int, idobrasocial);
     request.input('altabaja', sql.Bit, altabaja);
     request.input('idusuario', sql.Int, idusuario);
     
-
+ 
 
     result = await request.execute('sp_paciente_obrasocial_transitar_activo_pasivo');
 

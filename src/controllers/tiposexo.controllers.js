@@ -9,9 +9,6 @@ export const getTipoSexo = async (req, res) => {
           
       result = await request.execute('sp_Buscar_tipossexo');
            
-
-
-      
       return res.json(result.recordset);
       
     } catch (error) {
