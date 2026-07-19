@@ -1,10 +1,11 @@
 import { Router } from "express";
 
-import { getMediosdePagos} from "../controllers/mediosdepagos.controllers.js"
+import { getMediosdePagos, getTarjetasCreditoDebito} from "../controllers/mediosdepagos.controllers.js"
 
 const router = Router();
 
 router.get("/mediosdepagos", getMediosdePagos);
+router.get("/tarjetascreditodebito", getTarjetasCreditoDebito);
 
 export default router;
 

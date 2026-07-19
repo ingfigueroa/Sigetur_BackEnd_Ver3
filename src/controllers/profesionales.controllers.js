@@ -95,8 +95,7 @@ export const getProfesionalesHorarios = async (req, res) => {
     const pool = await getConnection();
     const request = pool.request();
     let result;
-    console.log(fecha)  
-
+    
 
     request.input('idprofesional', sql.Int, idprofesional);
     request.input('fecha', sql.Date, fecha)

@@ -20,12 +20,7 @@ export const putAsignarTurnoListaDeEspera = async (req, res) => {
     const pool = await getConnection();
     const request = pool.request();
 
-      console.log(idlistadeespera)
-      console.log(idturno)
-      console.log(idpac)
-      console.log(idos)
-      console.log(obs)
-      console.log(idusuario)
+   
 
 
       request.input("idlistadeespera", sql.Int, idlistadeespera)

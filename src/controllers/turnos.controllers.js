@@ -223,8 +223,10 @@ export const getAgendaSemanalProfesionalFecha = async (req, res) => {
   try {
 
     const {
+      idcliente,
       idprof,
-      fecha
+      fecha,
+      idusuario
     } = req.query;
 
 
@@ -232,8 +234,10 @@ export const getAgendaSemanalProfesionalFecha = async (req, res) => {
     const request = pool.request();
     let result;
 
+     request.input('idcliente', sql.Int, idcliente);
     request.input('idprofesional', sql.Int, idprof);
     request.input('fechaInicio', sql.Date, fecha);
+    request.input('idusuario', sql.Int, idusuario)
 
     result = await request.execute('sp_agenda_semanal_turnos_x_horario_x_profesional');
 
@@ -589,8 +593,7 @@ export const postEnviarTurnosManual = async (req, res) => {
   } = req.body;
   const emailprofesional = turnos[0].email
 
-  console.log(turnos[0].email)
-  console.log(">>> Recibí el POST a /postEnviarTurnosManual");
+
   try {
     const contenidoHTML = `
       <div style="font-family: Arial, sans-serif; padding: 20px;">
@@ -631,8 +634,7 @@ export const postEnviarTurnosManual = async (req, res) => {
         <p style="margin-top: 30px;">Este correo fue generado automáticamente. Por favor no responder.</p>
       </div>
     `;
-    console.log("App password cargada:", process.env.GMAIL_APP_PASSWORD);
-
+    
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -655,6 +657,216 @@ export const postEnviarTurnosManual = async (req, res) => {
     console.error("Error al enviar correo:", error);
     res.status(500).json({
       mensaje: "Error al enviar correo."
+    });
+  }
+};
+
+
+export const postTurnoCobrar = async (req, res) => {
+  try {
+
+
+    const {
+
+    idturno, 
+	  idusuario,
+	  observaciones,
+	  idformapago,
+	  idtarjeta,
+	  nrotarjeta,
+	  fechavto,
+    titular,
+    montoTotalaCobrar,
+    vienede,
+	
+    } = req.body;
+    
+
+  
+
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+ 
+
+     request.input('idturno', sql.Int, idturno);
+    
+    request.input('idusuario', sql.Int, idusuario);
+
+
+    request.input('observaciones', sql.VarChar, observaciones);
+     request.input('idformapago', sql.Int, idformapago);
+    request.input('idtarjeta', sql.Int, idtarjeta);
+    request.input('nrotarjeta', sql.Int, nrotarjeta);
+
+    request.input('fechavto', sql.Int, fechavto);
+    request.input('titular', sql.VarChar, titular);
+    request.input('montocobrado', sql.Numeric(10,2), montoTotalaCobrar);
+    request.input('vienede', sql.VarChar, vienede);
+    
+
+
+    result = await request.execute('sp_Cobrar_Turno'); 
+     return res.json(result.returnValue);
+
+
+  } catch (error) {
+    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    return res.status(500).json({
+      message: 'Error en el servidor'
+    });
+  }
+};
+
+export const postTurnoRegistrarPrestaciones = async (req, res) => {
+  try {
+
+
+    const {
+
+        idturno, 
+      
+        idusuario,
+        montoTotalaCobrar,
+        tabla_prestaciones
+    } = req.body;
+
+    
+
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+
+
+  const tablaPrestaciones = new sql.Table("Tabla_Prestaciones");
+
+
+// Deben estar en el MISMO ORDEN que el TYPE
+tablaPrestaciones.columns.add("idprestacion", sql.Int);
+tablaPrestaciones.columns.add("idcapitulo", sql.Int);
+tablaPrestaciones.columns.add("nombreprestacion", sql.NVarChar(200));
+tablaPrestaciones.columns.add("cantidad", sql.Int);
+tablaPrestaciones.columns.add("preciounitario", sql.Decimal(18,2));
+tablaPrestaciones.columns.add("observaciones", sql.NVarChar(500));
+tablaPrestaciones.columns.add("coseguro", sql.Int);
+tablaPrestaciones.columns.add("cobraraobrasocial", sql.Decimal(18,2));
+tablaPrestaciones.columns.add("cobrarapaciente", sql.Decimal(18,2));
+
+
+
+
+tabla_prestaciones.forEach((p) => {
+
+    tablaPrestaciones.rows.add(
+        p.idprestacion,
+        p.idcapitulo,
+        p.nombreprestacion,
+      
+        parseInt(p.cantidad),
+
+        p.preciounitario,
+       
+
+        p.observaciones,
+        p.coseguro,
+        p.cobraraobrasocial,
+        p.cobrarapaciente,
+        
+    );
+
+});
+
+
+     request.input('idturno', sql.Int, idturno);
+    request.input('idusuario', sql.Int, idusuario);
+
+
+    request.input('totalacobrar', sql.Numeric(10,2), montoTotalaCobrar);
+
+    request.input("tabla_prestaciones",tablaPrestaciones);
+
+
+    result = await request.execute('sp_Registrar_Prestaciones_por_turno'); 
+  
+    return res.json(result.returnValue);
+
+
+
+  } catch (error) {
+    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    return res.status(500).json({
+      message: 'Error en el servidor'
+    });
+  }
+};
+
+export const getPrestacionesporTurno = async (req, res) => {
+  try {
+    const {
+      idturno
+    } = req.query;
+
+   
+
+    // Validación rápida
+
+
+    const pool = await getConnection();
+    const request = pool.request();
+
+    request.input('idturno', sql.Int, idturno);
+   
+
+
+
+    const result = await request.execute('sp_Buscar_prestaciones_x_turno');
+
+   
+    /* return res.json(result.recordset); */
+    return res.json(result.recordset[0] || null);
+
+  } catch (error) {
+    
+    return res.status(500).json({
+      message: 'Error en el servidor',
+      error: error.message
+    });
+  }
+};
+
+export const getTurnoIDDetalle = async (req, res) => {
+  try {
+
+    const {
+      idturno
+    } = req.query;
+
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+
+
+
+    request.input('idturno', sql.Int, idturno);
+
+
+    result = await request.execute('sp_Buscar_Turno_id_para_detalle');
+
+
+    //return res.json(result.recordset);
+    const turno = result.recordsets[0][0] || null;
+    const prestaciones = result.recordsets[1] || [];
+  
+    return res.json({
+        turno,
+        prestaciones
+    });
+
+
+  } catch (error) {
+    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    return res.status(500).json({
+      messaSge: 'Error en el servidor'
     });
   }
 };

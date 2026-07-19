@@ -12,8 +12,7 @@ export const getPacientes = async (req, res) => {
       pagina,
       cantidadPorPagina
     } = req.query;
-    console.log(idcliente)
-
+    
     const page = parseInt(pagina) || 1;
     const limit = parseInt(cantidadPorPagina) || 20;
     const offset = (page - 1) * limit;
@@ -76,7 +75,6 @@ export const createPacientes = async (req, res) => {
       idusuario
     } = req.body;
 
-    console.log(req.body)
     // VALIDACIONES
     if (!Nombres || !Apellido) {
       return res.status(400).json({

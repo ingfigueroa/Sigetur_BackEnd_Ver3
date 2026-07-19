@@ -21,7 +21,7 @@ export const formatearFecha = (fecha) => {
 };
 
 export const formatearFechaentradd_mm_yyy_sale_yyyy_mm_dd = (fecha) => {
-  console.log(fecha)
+  
   if (!fecha) return "";
 
   const dia = fecha.substring(0, 2);

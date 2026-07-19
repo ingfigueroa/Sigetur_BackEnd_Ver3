@@ -6,7 +6,7 @@ import authorize from "../middleware/authorize.js";
 
 import ROLES from "../constants/roles.js";
 
-import { getTurnosProfesionalFecha, putTurnosPasaraPendiente, getTurnosCrear, putTurnosCambiarEstados, getEstadosPorTurno, putTurnosAnularPorPedidoProfesional, getTurnosBuscarProfesionalDiaCancelado, getAgendaSemanalProfesionalFecha, getAgendaSemanalProfesionalFechaAgrupado, getTurnosConsultasPorFecha,getTurnoID, getTurnoLibreID, postEnviarTurnosManual, postSobreturnosCrear, getTurnosLibresProfesional_Falta_Mes } from '../controllers/turnos.controllers.js';
+import { getTurnosProfesionalFecha, putTurnosPasaraPendiente, getTurnosCrear, putTurnosCambiarEstados, getEstadosPorTurno, putTurnosAnularPorPedidoProfesional, getTurnosBuscarProfesionalDiaCancelado, getAgendaSemanalProfesionalFecha, getAgendaSemanalProfesionalFechaAgrupado, getTurnosConsultasPorFecha,getTurnoID, getTurnoLibreID, postEnviarTurnosManual, postSobreturnosCrear, getTurnosLibresProfesional_Falta_Mes, postTurnoCobrar, postTurnoRegistrarPrestaciones, getPrestacionesporTurno, getTurnoIDDetalle} from '../controllers/turnos.controllers.js';
 
 const router = Router();
 
@@ -34,6 +34,7 @@ router.put("/turnos/anularturnospedidoprofesional",verificarTokenUsuario,  autho
 
 router.get("/turnos/ageseturproffecha",verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]),getAgendaSemanalProfesionalFecha);
 
+
 router.get('/turnos/AgeSemTurProfFechaAgrupado',verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]), getAgendaSemanalProfesionalFechaAgrupado);
 
 router.get('/turnos/consultasporfecha', verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]),getTurnosConsultasPorFecha);
@@ -42,9 +43,17 @@ router.post('/turnos/postEnviarTurnosManual',verificarTokenUsuario,  authorize([
 
 router.get('/turnos/turnoslibresfechames',verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]), getTurnosLibresProfesional_Falta_Mes)
 
+router.post('/turnos/cobrar',verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]), postTurnoCobrar)
+
+router.post('/turnos/registrarprestaciones',verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]), postTurnoRegistrarPrestaciones)
+
+router.get('/turnos/prestacionesporturno',verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]), getPrestacionesporTurno)
+
+router.get("/turnoid/detalle", verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]), getTurnoIDDetalle);
+
+
+ 
 
 
 
-
-
-export default router; 
+export default router;  

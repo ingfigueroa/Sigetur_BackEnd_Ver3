@@ -20,8 +20,6 @@ export const createHC = async (req, res) => {
 
 
 
-    /*  Los nombres de los paràmetros tienen que coincidir con estan definidos en el proce almacenado
-    console.log('Profesional registrado exitosamente'); */
 
     request.input('idpaciente', sql.Int, idpaciente);
     request.input('idprofesional', sql.Int, idprofesional);
@@ -202,8 +200,7 @@ export const createHCDiagnostico = async (req, res) => {
 
 
 
-    /*  Los nombres de los paràmetros tienen que coincidir con estan definidos en el proce almacenado
-    console.log('Profesional registrado exitosamente'); */
+    
 
     request.input('idpaciente', sql.Int, idpaciente);
     request.input('idprofesional', sql.Int, idprofesional);

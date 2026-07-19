@@ -89,15 +89,12 @@ export const postUpdatePassword = async (req, res) => {
       // 🔑 generar hash
       const passwordHash = await bcrypt.hash(password, saltRounds);
 
-      console.log(passwordHash)
-      console.log(idusuario)
-
+      
       request.input('password', sql.NVarChar, passwordHash )
       request.input('idusuario', sql.Int, idusuario )
      
       result = await request.execute('sp_usuario_actualizar_password');
       
-      console.log(result.recordset[0])
      res.json(result.recordset[0].resultado); // 👈 IMPORTANTE
      
  
@@ -150,8 +147,7 @@ try {
 
       //tendria que guardar el codigo y el mail 
       //para despues comparar
-      console.log(email)
-  
+     
       const idusuario = await getIdUsuario(email)
      
       const result = await postAddTokenTransitorio(idusuario, hash);

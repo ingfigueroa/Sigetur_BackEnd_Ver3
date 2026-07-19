@@ -80,10 +80,7 @@ export const putObraSocialDesafectarPaciente = async (req, res) => {
     idusuario
    
   } = req.body || {};
-    console.log(idcliente)
-    console.log(idpaciente)
-    console.log(idusuario)
-  
+   
     const pool = await getConnection();
     const request = pool.request();
     let result;

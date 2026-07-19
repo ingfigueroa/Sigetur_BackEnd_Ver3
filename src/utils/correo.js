@@ -2,17 +2,7 @@ import bcrypt from 'bcrypt';
 
 import nodemailer from 'nodemailer';
 
- /*  export const generarTokenHash =  () => {
-
-    const tokenProvisorio = Math.floor(100000 + Math.random() * 900000).toString()
-    
-    const saltRounds = 10;
-    const tokenHash = bcrypt.hash(tokenProvisorio, saltRounds);
-  console.log(tokenHash)
-    return tokenHash;
-   };
-
- */
+ 
 
    import crypto from 'crypto';
 
