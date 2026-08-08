@@ -8,7 +8,7 @@ export const getProvincias = async (req, res) => {
       let result;
 
      
-      result = await request.execute('sp_Buscar_Provincias');
+      result = await request.execute('sp_Cargar_Provincias');
            
       return res.json(result.recordset);
       

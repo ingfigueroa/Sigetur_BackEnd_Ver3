@@ -18,7 +18,9 @@ export const postCrearCliente = async (req, res) => {
   const {
     email,
 	  razonsocial,
-	  tipocliente
+	  tipocliente,
+    idprovincia,
+    idlocalidad
   } = req.body || {};
 
   try {
@@ -29,6 +31,9 @@ export const postCrearCliente = async (req, res) => {
     request.input('razonsocial', sql.VarChar, razonsocial);
     request.input('tipocliente', sql.VarChar, tipocliente);
     request.input('tokenhash', sql.NVarChar, hash);
+     request.input('idprovincia', sql.Int, idprovincia);
+     request.input('idlocalidad', sql.Int, idlocalidad);
+
 
     const result = await request.execute('sp_crear_cliente'); 
 

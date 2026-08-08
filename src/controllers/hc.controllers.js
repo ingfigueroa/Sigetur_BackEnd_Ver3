@@ -29,7 +29,7 @@ export const createHC = async (req, res) => {
 
     result = await request.execute('sp_crear_historia_clinica');
 
-
+ 
     res.status(201).json({
       message: 'Historia clínica registrada exitosamente'
 

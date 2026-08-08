@@ -72,8 +72,12 @@ export const createPacientes = async (req, res) => {
       FechaNacimiento,
       TECelular,
       Sexo,
-      idusuario
+      idusuario,
+      idprovincia,
+      idlocalidad
     } = req.body;
+
+    
 
     // VALIDACIONES
     if (!Nombres || !Apellido) {
@@ -82,7 +86,7 @@ export const createPacientes = async (req, res) => {
       });
     }
 
-    const pool = await getConnection();
+    const pool = await getConnection(); 
     const request = pool.request();
 
     request.input('idcliente', sql.Int, idcliente);
@@ -95,6 +99,8 @@ export const createPacientes = async (req, res) => {
     request.input('TECelular', sql.VarChar, TECelular);
     request.input('Sexo', sql.Int, Sexo);
     request.input('idusuario', sql.Int, idusuario);
+    request.input('idprovincia', sql.Int, idprovincia);
+    request.input('idlocalidad', sql.Int, idlocalidad);
 
     request.output('RETORNO', sql.Int);
     request.output('Resultado', sql.Int);
@@ -110,7 +116,7 @@ export const createPacientes = async (req, res) => {
 
   } catch (error) {
 
-    return res.status(500).json({
+    return res.status(500).json({ 
       ok: false,
       message: 'Error en el servidor'
     });

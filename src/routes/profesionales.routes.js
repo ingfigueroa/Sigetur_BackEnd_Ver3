@@ -17,17 +17,17 @@ router.get("/profesionaleshorarios", verificarTokenUsuario,  authorize([ROLES.AD
 
 router.get("/profesionalesProfesionid", verificarTokenUsuario, authorize(ROLES.ADMIN),getProfesionalProfesion);
 
-router.post("/profesionalesadd", authorize([ROLES.ADMIN, ROLES.SECRETARIA]), createProfesionales);
+router.post("/profesionalesadd", verificarTokenUsuario, authorize([ROLES.ADMIN, ROLES.SECRETARIA]), createProfesionales);
 
-router.get("/profesionalid", getProfesionalBuscarID);
+router.get("/profesionalid", verificarTokenUsuario, authorize([ROLES.ADMIN, ROLES.SECRETARIA]),getProfesionalBuscarID);
 
-router.get("/idprofesionalemail", getIDProfesionalBuscarxEmail);
+router.get("/idprofesionalemail", verificarTokenUsuario, authorize([ROLES.ADMIN, ROLES.SECRETARIA]),getIDProfesionalBuscarxEmail);
 
-router.put("/profesional/baja", authorize([ROLES.ADMIN, ROLES.SECRETARIA]), putProfesionalPasaraPasivo)
+router.put("/profesional/baja", verificarTokenUsuario, authorize([ROLES.ADMIN, ROLES.SECRETARIA]), putProfesionalPasaraPasivo)
 
-router.get("/profesional/fechacambiohorario", authorize([ROLES.ADMIN, ROLES.SECRETARIA]), getProfesionalFechaCambioHorario)
+router.get("/profesional/fechacambiohorario", verificarTokenUsuario, authorize([ROLES.ADMIN, ROLES.SECRETARIA]), getProfesionalFechaCambioHorario)
 
-router.post("/profesional/cambiohorariomultiple",authorize([ROLES.ADMIN, ROLES.SECRETARIA]),  putProfesionalCambioHorarioMultiple)
+router.post("/profesional/cambiohorariomultiple", verificarTokenUsuario, authorize([ROLES.ADMIN, ROLES.SECRETARIA]),  putProfesionalCambioHorarioMultiple)
 
 //router.post("/passwordtransitoria", postCrearCliente);
 

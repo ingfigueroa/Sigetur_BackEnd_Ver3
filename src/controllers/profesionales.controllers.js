@@ -37,6 +37,7 @@ export const getProfesionales = async (req, res) => {
     const pool = await getConnection();
     const request = pool.request();
     let result;
+     request.input('idcliente', sql.Int, idcliente);
   
     if (VarDni > 0) {
 
@@ -45,15 +46,15 @@ export const getProfesionales = async (req, res) => {
       result = await request.execute('sp_Buscar_Profesional_Dni');
   
     } else if (Apellido != null && Apellido != '') {
-      request.input('idcliente', sql.Int, idcliente);
+     
       request.input('Apellido', sql.VarChar, Apellido);
       request.input('Offset', sql.Int, offset);
       request.input('Limit', sql.Int, limit);
       result = await request.execute('sp_Buscar_Profesionales_Apellido');
       
 
-    } else if (idprofesion > 0) {
-       request.input('idcliente', sql.Int, idcliente);
+    } else if (idprofesion > 0) { 
+      
       request.input('idprofesion', sql.Int, idprofesion);
       request.input('Offset', sql.Int, offset);
       request.input('Limit', sql.Int, limit);
@@ -62,7 +63,7 @@ export const getProfesionales = async (req, res) => {
     
    
       //let ApellidoVacio = '';
-       request.input('idcliente', sql.Int, idcliente);
+       
       request.input('Apellido', sql.VarChar, Apellido);
       request.input('Offset', sql.Int, offset);
       request.input('Limit', sql.Int, limit);
@@ -88,6 +89,7 @@ export const getProfesionales = async (req, res) => {
 export const getProfesionalesHorarios = async (req, res) => {
   try {
     const {
+      idcliente,
       idprofesional,
       fecha
     } = req.query;
@@ -96,7 +98,7 @@ export const getProfesionalesHorarios = async (req, res) => {
     const request = pool.request();
     let result;
     
-
+     request.input('idcliente', sql.Int, idcliente);
     request.input('idprofesional', sql.Int, idprofesional);
     request.input('fecha', sql.Date, fecha)
     result = await request.execute('sp_buscar_profesional_diashoras_trabaja');
@@ -170,7 +172,10 @@ export const createProfesionales = async (req, res) => {
     matriculanro,
     idtipoprofesion,
     idusuario,
+    idprovincia,
+    idlocalidad,
     nuevo
+    
   } = req.body || {};
 
 
@@ -198,6 +203,8 @@ export const createProfesionales = async (req, res) => {
     request.input('IDTipoProfesion', sql.Int, idtipoprofesion);
     request.input('idusuario', sql.Int, idusuario);
     request.input('passwordtransitoria', sql.VarChar, hash )
+    request.input('idprovincia', sql.Int, idprovincia);
+    request.input('idlocalidad', sql.Int, idlocalidad);
     request.input('Nuevo', sql.Int, nuevo);
     request.output('Resultado', sql.Int)
 
@@ -231,6 +238,7 @@ export const getProfesionalBuscarID = async (req, res) => {
       idcliente,
       idprofesional
     } = req.query;
+
 
     const pool = await getConnection();
     const request = pool.request();
@@ -304,6 +312,7 @@ export const getIDProfesionalBuscarxEmail = async (req, res) => {
 export const getProfesionalFechaCambioHorario = async (req, res) => {
   try {
     const {
+      idcliente,
       idprofesional
     } = req.query;
 
@@ -314,7 +323,7 @@ export const getProfesionalFechaCambioHorario = async (req, res) => {
 
 
     if (idprofesional > 0) {
-      
+        request.input('idcliente', sql.Int, idcliente);
       request.input('idprofesional', sql.Int, idprofesional);
       result = await request.execute('sp_Buscar_Profesional_Fecha_Cambios_Horarios');
 
@@ -345,7 +354,8 @@ export const putProfesionalPasaraPasivo = async (req, res) => {
     const {
       idprofesional,
       observaciones,
-      idusuario
+      idusuario,
+      idcliente
     } = req.body || {}; 
 
 
@@ -360,6 +370,7 @@ export const putProfesionalPasaraPasivo = async (req, res) => {
    
     request.input('observaciones', sql.VarChar, observaciones);
     request.input('idusuario', sql.Int, idusuario);
+    request.input('idcliente', sql.Int, idcliente);
    
 
 
@@ -393,9 +404,11 @@ export const putProfesionalCambioHorarioMultiple = async (req, res) => {
 
     // Tomo los valores comunes del primer elemento
     const idprofesional = horarios[0].idprofesional;
+    const idcliente = horarios[0].idcliente;
     const fecha = horarios[0].fechadesde;       // viene como fechadesde
-    const idusuario = 1;        // O el que uses en tu sesión
-
+    const idusuario = horarios[0].idusuario;        // O el que uses en tu sesión
+   
+    
     // Armamos la tabla que coincida con el tipo Tabla_Horarios en SQL
     const tabla = new sql.Table("Tabla_Horarios");
     tabla.columns.add("IDDia", sql.Int);
@@ -433,6 +446,7 @@ export const putProfesionalCambioHorarioMultiple = async (req, res) => {
 
     // Ejecutamos el procedimiento
     const request = pool.request();
+        request.input("idcliente", sql.Int, idcliente);
     request.input("idprofesional", sql.Int, idprofesional);
     request.input("fecha", sql.Date, fecha);
     request.input("Tabla_Nuevos_Horarios", tabla);

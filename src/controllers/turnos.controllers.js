@@ -290,7 +290,42 @@ export const getTurnosBuscarProfesionalDiaCancelado = async (req, res) => {
   }
 };
 
+export const getTurnosBuscarProfesionalDiaAtiende = async (req, res) => {
+  try {
+    const {
+      idcliente,
+      idprofesional,
+      fecha
+    } = req.query;
 
+
+
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+
+
+
+    request.input('idcliente', sql.Int, idcliente);
+    request.input('idprofesional', sql.Int, idprofesional);
+    request.input('fecha', sql.Date, fecha);
+
+
+
+    result = await request.execute('sp_buscar_profesional_si_trabaja_dia'); 
+
+
+
+    return res.json(result.recordset);
+
+
+  } catch (error) {
+    
+    return res.status(500).json({
+      message: 'Error en el servidor'
+    });
+  }
+};
 
 
 export const getEstadosPorTurno = async (req, res) => {
@@ -728,6 +763,8 @@ export const postTurnoRegistrarPrestaciones = async (req, res) => {
       
         idusuario,
         montoTotalaCobrar,
+        cobrarapaciente,
+        cobraraobrasocial,
         tabla_prestaciones
     } = req.body;
 
@@ -782,6 +819,8 @@ tabla_prestaciones.forEach((p) => {
 
 
     request.input('totalacobrar', sql.Numeric(10,2), montoTotalaCobrar);
+    request.input('cobrarapaciente', sql.Numeric(10,2), cobrarapaciente);
+    request.input('cobraraobrasocial', sql.Numeric(10,2), cobraraobrasocial);
 
     request.input("tabla_prestaciones",tablaPrestaciones);
 

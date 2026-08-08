@@ -17,7 +17,7 @@ function authorize(allowedRoles = []) {
       allowedRoles.includes(role)
     );
 
-  
+   
 
     if (!hasRole) {
 
