@@ -40,7 +40,10 @@ app.get('/', (req,res) =>{
 
 
 app.use(cors({
-  origin: "http://localhost:5173", // tu frontend
+  origin: [
+    "http://localhost:5173",
+    "https://sigetur.ar"
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
