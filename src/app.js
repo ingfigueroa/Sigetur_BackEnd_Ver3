@@ -25,6 +25,8 @@ import clientesRoutes from './routes/clientes.routes.js';
 
 import loginRoutes from './routes/login.routes.js';
 
+import usuarioRoutes from './routes/usuarios.routes.js';
+
 import cors from 'cors';
 
 
@@ -84,6 +86,7 @@ app.use(hcRoutes);
 app.use(correosRoutes);
 app.use(clientesRoutes);
 app.use(loginRoutes);
+app.use(usuarioRoutes);
 
 
 

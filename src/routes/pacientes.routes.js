@@ -6,7 +6,7 @@ import authorize from "../middleware/authorize.js";
 
 import ROLES from "../constants/roles.js";
 
-import { createPacientes, getPacienteBuscarID, getPacientes, getPacienteTurnosUltimos, updatePacientes } from '../controllers/pacientes.controllers.js';
+import { createPacientes, getPacienteBuscarID, getPacientes, getPacienteTurnosUltimos, updatePacientes, getPacienteBuscarxEmail } from '../controllers/pacientes.controllers.js';
 
 const router = Router();
 
@@ -18,7 +18,10 @@ router.post("/pacienteupdate", verificarTokenUsuario, authorize([ROLES.ADMIN, RO
 
 router.get("/pacienteid", verificarTokenUsuario, authorize([ROLES.ADMIN, ROLES.SECRETARIA, ROLES.PROFESIONAL]), getPacienteBuscarID);
 
+
 router.get("/pacientesultimosturnos", verificarTokenUsuario, authorize([ROLES.ADMIN, ROLES.SECRETARIA, ROLES.PROFESIONAL]), getPacienteTurnosUltimos);
+
+router.get("/pacienteemail", verificarTokenUsuario, authorize([ROLES.ADMIN, ROLES.SECRETARIA, ROLES.PROFESIONAL]), getPacienteBuscarxEmail);
  
 
 export default router;

@@ -499,7 +499,6 @@ export const putTurnosCambiarEstados = async (req, res) => {
     });
 
   } catch (error) {
-     console.log("ERROR: " + error)
      
     // Aquí ocurrió un error, asegúrate de usar res.status antes de enviar un objeto JSON
     res.status(500).json({

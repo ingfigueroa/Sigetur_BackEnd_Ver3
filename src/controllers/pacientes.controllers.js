@@ -52,7 +52,7 @@ export const getPacientes = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error en la ejecución del procedimiento almacenado:', error);
+   
     return res.status(500).json({
       message: 'Error en el servidor'
     }); // Enviar un mensaje de error al cliente
@@ -203,7 +203,7 @@ export const getPacienteBuscarID = async (req, res) => {
      
       return res.json(result.recordset);
     } else {
-      console.error('No se obtuvieron resultados de la consulta. Buscar por ID');
+      return false;
     }
 
   
@@ -230,33 +230,69 @@ export const getPacienteTurnosUltimos = async (req, res) => {
     let result;
 
 
-if (idpaciente > 0) {
+      if (idpaciente > 0) {
 
-  request.input('idcliente', sql.Int, idcliente);
-  request.input('idpaciente', sql.Int, idpaciente);
+        request.input('idcliente', sql.Int, idcliente);
+        request.input('idpaciente', sql.Int, idpaciente);
 
-  result = await request.execute('sp_Buscar_Turnos_Paciente_Ultimos');
+        result = await request.execute('sp_Buscar_Turnos_Paciente_Ultimos');
 
-}
+      }
 
-if (result) {
+      if (result) {
 
-  // Primer SELECT
-  const total = result.recordsets[0];
+        // Primer SELECT
+        const total = result.recordsets[0];
 
-  // Segundo SELECT
-  const turnos = result.recordsets[1];
+        // Segundo SELECT
+        const turnos = result.recordsets[1];
 
-  return res.json({
-    total: total[0]?.total || 0,
-    registros: turnos
-  });
+        return res.json({
+          total: total[0]?.total || 0,
+          registros: turnos
+        });
 
-} else {
+      } else {
 
-  console.error('No se obtuvieron resultados de la consulta.');
+        console.error('No se obtuvieron resultados de la consulta.');
 
-}
+      }
+
+
+
+  } catch (error) {
+    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    return res.status(500).json({
+      message: 'Error en el servidor'
+    });
+  }
+};
+
+export const getPacienteBuscarxEmail = async (req, res) => {
+  try {
+    const {
+      email
+    } = req.query;
+
+ 
+
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+
+
+
+    
+       request.input('email', sql.VarChar, email);
+     
+      result = await request.execute('sp_Buscar_paciente_email');
+
+    
+
+    return res.json({
+      total: result.recordsets[0][0].Total,
+      registros: result.recordsets[1]
+    });
 
 
 

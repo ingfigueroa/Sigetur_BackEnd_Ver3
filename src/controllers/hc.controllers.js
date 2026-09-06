@@ -8,9 +8,10 @@ import {
 export const createHC = async (req, res) => {
 
   const {
-    idpaciente,
-    idprofesional,
-    idusuario
+    idpaciente,   
+    idusuario,
+    idcliente
+
   } = req.body || {};
 
   try {
@@ -22,13 +23,14 @@ export const createHC = async (req, res) => {
 
 
     request.input('idpaciente', sql.Int, idpaciente);
-    request.input('idprofesional', sql.Int, idprofesional);
+    
     request.input('idusuario', sql.Int, idusuario);
+    request.input('idcliente', sql.Int, idcliente);
    
 
 
     result = await request.execute('sp_crear_historia_clinica');
-
+ 
  
     res.status(201).json({
       message: 'Historia clínica registrada exitosamente'
@@ -47,9 +49,13 @@ export const createHCAnamnesisMedica = async (req, res) => {
 
  const data = req.body;
 
+
+
+ 
+
   try {
 
-  
+
     const pool = await getConnection();
     const request = pool.request();
 
@@ -62,15 +68,15 @@ export const createHCAnamnesisMedica = async (req, res) => {
  
     await request.execute('sp_crear_hc_anamnesis_medica');
     // Recuperación de los valores de los parámetros de salida
-   
-    res.status(201).json({
-      message: 'Anamnesis Médica registrada exitosamente'
-      /* retorno,
-      resultado */
-    }); 
+    
+      res.status(201).json({
+        message: 'Anamnesis Médica registrada exitosamente'
+        /* retorno,
+        resultado */
+      }); 
 
   } catch (error) {
-    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    
     return res.status(500).json({
       message: 'Error en el servidor'
     }); // Enviar un mensaje de error al cliente
@@ -119,6 +125,7 @@ export const createHCOdontogramaFoto = async (req, res) => {
 
  const data = req.body; // Debe ser un array
 
+
   
  
   if (!Array.isArray(data) || data.length === 0) {
@@ -139,9 +146,10 @@ export const createHCOdontogramaFoto = async (req, res) => {
     tvp.columns.add("idpieza", sql.Int);
     tvp.columns.add("idcara", sql.Int);
     tvp.columns.add("idsituaciondentaria", sql.Int);
-    tvp.columns.add("idprofesional", sql.Int);
+   
     tvp.columns.add("observaciones", sql.VarChar(150));
     tvp.columns.add("idusuario", sql.Int);
+     tvp.columns.add("idcliente", sql.Int);
     
 
     // Agregar filas al TVP
@@ -152,12 +160,15 @@ export const createHCOdontogramaFoto = async (req, res) => {
         item.idpieza,
         item.idcara,
         item.idsituaciondentaria,
-        item.idprofesional,
+        
         item.observaciones || null,
-        item.idusuario
+        item.idusuario,
+        item.idcliente
       );
 
     });
+
+   
 
     // Ejecutar procedimiento almacenado
     await pool.request()
@@ -268,6 +279,7 @@ try {
  
 
     const {
+      
       idpaciente
       
     } = req.query;
@@ -275,6 +287,7 @@ try {
      
     const pool = await getConnection();
     const request = pool.request();
+
     request.input('idpaciente', sql.Int, idpaciente);
 
     const { recordset } = await request.execute('sp_buscar_hc_nro');
