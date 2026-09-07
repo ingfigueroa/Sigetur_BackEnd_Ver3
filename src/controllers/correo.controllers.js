@@ -58,8 +58,8 @@ export const postCrearCuenta = async (req, res) => {
       },
     });
 
-
-    const linkRegistro = `http://localhost:5173/crearcuentapasodos?token=${token}`;
+    const linkRegistro = `${process.env.FRONTEND_URL}/resetpassword?token=${token}`;
+    //const linkRegistro = `http://localhost:5173/crearcuentapasodos?token=${token}`;
     //const linkRegistro = `https://sigetur.ar/crearcuentapasodos?token=${token}`;
 
     await transporter.sendMail({
