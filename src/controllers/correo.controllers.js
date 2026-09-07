@@ -59,8 +59,8 @@ export const postCrearCuenta = async (req, res) => {
     });
 
 
-    //const linkRegistro = `http://localhost:5173/crearcuentapasodos?token=${token}`;
-    const linkRegistro = `https://sigetur.ar/resetpassword?token=${token}`;
+    const linkRegistro = `http://localhost:5173/crearcuentapasodos?token=${token}`;
+    //const linkRegistro = `https://sigetur.ar/crearcuentapasodos?token=${token}`;
 
     await transporter.sendMail({
       from: `SIGETUR <${process.env.EMAIL_USER}>`,
@@ -149,8 +149,10 @@ export const tokenResetPassword = async (email, token) => {
     });
 
 
-    //const linkRegistro = `http://localhost:5173/resetpassword?token=${token}`;
-    const linkRegistro = `https://sigetur.ar/resetpassword?token=${token}`;
+    // Cambia la URL fija por la variable de entorno
+    const linkRegistro = `${process.env.FRONTEND_URL}/resetpassword?token=${token}`;
+
+    //const linkRegistro = `https://sigetur.ar/resetpassword?token=${token}`;
     // 📤 Enviar mail
     await transporter.sendMail({
       from: `SIGETUR <${process.env.EMAIL_USER}>`,
@@ -199,7 +201,7 @@ export const tokenResetPassword = async (email, token) => {
 
     return true;
   } catch (error) {
-    console.error('Error enviando mail:', error);
+    
     return false;
 
   }
