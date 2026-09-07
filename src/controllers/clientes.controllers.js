@@ -24,7 +24,7 @@ export const postCrearCliente = async (req, res) => {
   } = req.body || {};
 
   try {
-    const pool = await getConnection();
+    const pool = await getConnection(); 
     const request = pool.request();
     
     request.input('email', sql.VarChar, email);

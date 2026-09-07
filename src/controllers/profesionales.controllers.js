@@ -178,16 +178,13 @@ export const createProfesionales = async (req, res) => {
     
   } = req.body || {};
 
-
-
   try {
     const pool = await getConnection();
     const request = pool.request();
-    let result;
+    let result; 
+  
 
-
-    /*  Los nombres de los paràmetros tienen que coincidir con estan definidos en el proce almacenado
-    console.log('Profesional registrado exitosamente'); */
+ 
     request.input('idcliente', sql.Int, idcliente);
     request.input('idprofesional', sql.Int, idProfesional);
     request.input('Nombres', sql.VarChar, Nombres);
@@ -213,18 +210,19 @@ export const createProfesionales = async (req, res) => {
     result = await request.execute('sp_crear_profesional');
 
     // 👇 agarrás el primer resultado
-    const data = result.recordset;
+    const resultado = result.output.Resultado;
+    
    
    
 
       res.status(201).json({
       message: 'Profesional registrado exitosamente',
-     
+      resultado,
     });
 
 
   } catch (error) {
-    console.error('Error en la ejecución del procedimiento almacenado:', error);
+    
     res.status(500).json({
       message: 'Error en el servidor'
     });
@@ -272,8 +270,7 @@ export const getProfesionalBuscarID = async (req, res) => {
 export const getIDProfesionalBuscarxEmail = async (req, res) => {
   try {
     const {
-      email,
-      idcliente
+      email
     } = req.query;
 
  
@@ -284,24 +281,22 @@ export const getIDProfesionalBuscarxEmail = async (req, res) => {
 
 
 
-    if (idcliente > 0) {
+    
        request.input('email', sql.VarChar, email);
-      request.input('idcliente', sql.Int, idcliente);
-      result = await request.execute('sp_Buscar_idprofesional_idcliente_email');
+     
+      result = await request.execute('sp_Buscar_profesional_email');
 
-    }
+    
 
-    if (result && result.recordset) {
-      // Procesar los resultados
-      return res.json(result.recordset);
-    } else {
-      console.error('No se obtuvieron resultados de la consulta.');
-    }
+    return res.json({
+      total: result.recordsets[0][0].Total,
+      registros: result.recordsets[1]
+    });
 
 
 
   } catch (error) {
-    console.error('Error en la ejecución del procedimiento almacenado:', error);
+   
     return res.status(500).json({
       message: 'Error en el servidor'
     });
