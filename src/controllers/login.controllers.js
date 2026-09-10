@@ -116,13 +116,14 @@ export const postUpdatePassword = async (req, res) => {
       let result;
 
   
-
+      console.log("pasa por postaddtoken" + tokenhash)
       request.input('idusuario', sql.Int, idusuario )
       request.input('tokenhash', sql.VarChar, tokenhash )
      
       result = await request.execute('sp_crear_Token_Transitorio');
+      console.log("Sale del sp_crear token treanssitorio" + result)
       return result.recordset // 👈 IMPORTANTE
-     
+      
 
 
 
@@ -150,13 +151,16 @@ try {
      
       const idusuario = await getIdUsuario(email)
      
+     
       const result = await postAddTokenTransitorio(idusuario, hash);
 
+    
       const resp = await tokenResetPassword(email, token);
-   
+
+      
 
     return res.status(200).json({
-      success: true,
+      resp
      
     });
 

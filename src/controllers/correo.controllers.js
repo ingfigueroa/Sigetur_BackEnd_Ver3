@@ -58,8 +58,6 @@ export const postCrearCuenta = async (req, res) => {
       },
     });
 
-    console.log(process.env.EMAIL_USER)
-    console.log(process.env.EMAIL_PASS)
     
     const linkRegistro = `${process.env.FRONTEND_URL}/crearcuentapasodos?token=${token}`;
     
@@ -142,28 +140,33 @@ export const tokenResetPassword = async (email, token) => {
       throw new Error('Email y token son requeridos');
     }
 
+   
+
+   
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER,
+        user: process.env.EMAIL_USER, 
         pass: process.env.EMAIL_PASS,
       },
     });
 
-
+    
+ 
     // Cambia la URL fija por la variable de entorno
     
     const linkRegistro = `${process.env.FRONTEND_URL}/resetpassword?token=${token}`;
 
 
-
+   
 
     //const linkRegistro = `http://localhost:5173/resetpassword?token=${token}`;
     // 📤 Enviar mail
     await transporter.sendMail({
       from: `SIGETUR <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "SIGETUR - ACTUALIZAR CONTRASEÑA",
+      subject: "SIGETUR - ACTUALIZAR CONTRASEÑA", 
+      
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
           
@@ -176,7 +179,7 @@ export const tokenResetPassword = async (email, token) => {
           <p>Válido por 20 minutos</p>
           
           <p>Para completar el proceso, hacé clic en el siguiente botón:</p>
-
+        
           <div style="margin: 30px 0;">
             <a href="${linkRegistro}" 
                style="padding:12px 25px; background:#0d6efd; color:white; text-decoration:none; border-radius:5px; font-weight:bold;">
@@ -204,13 +207,12 @@ export const tokenResetPassword = async (email, token) => {
         </div>
       `,
     });
-
+    
     return true;
-  } catch (error) {
+  }catch (error) {
     
     return false;
-
-  }
+}
 
 };
 
