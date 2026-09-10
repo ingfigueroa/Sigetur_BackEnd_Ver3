@@ -101,7 +101,7 @@ export const postUpdatePassword = async (req, res) => {
 
 
     } catch (error) {
-      console.error('Error en la ejecución del procedimiento almacenado:', error);
+      
       return res.status(500).json({ message: 'Error en el servidor' }); // Enviar un mensaje de error al cliente
     
     }
