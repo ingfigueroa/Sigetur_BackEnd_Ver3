@@ -27,6 +27,10 @@ import loginRoutes from './routes/login.routes.js';
 
 import usuarioRoutes from './routes/usuarios.routes.js';
 
+import dolaroficialRoutes from './routes/apipublicas.routes.js';
+
+import tiposestudioRoutes from './routes/tiposestudios.routes.js';
+
 import cors from 'cors';
 
 
@@ -87,6 +91,8 @@ app.use(correosRoutes);
 app.use(clientesRoutes);
 app.use(loginRoutes);
 app.use(usuarioRoutes);
+app.use(dolaroficialRoutes);
+app.use(tiposestudioRoutes);
 
 
 

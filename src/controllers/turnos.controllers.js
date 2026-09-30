@@ -908,3 +908,34 @@ export const getTurnoIDDetalle = async (req, res) => {
     });
   }
 };
+
+
+
+export const postTurnoNotaClinica = async (req, res) => {
+    try {
+
+        const pool = await getConnection();
+        const request = pool.request();
+
+        request.input('idturno', sql.Int, req.body.idturno);
+        request.input('idpaciente', sql.Int, req.body.idpaciente);
+        request.input('idprofesional', sql.Int, req.body.idprofesional);
+        request.input('notasclinicas', sql.VarChar, req.body.notasclinicas);
+
+        const result = await request.execute('sp_turno_notas_clinicas');
+
+        const id = result.recordset[0].id;
+
+        return res.status(200).json({
+            id: id
+        });
+
+    } catch (error) {
+
+        console.error("Error al guardar nota clínica:", error);
+
+        return res.status(500).json({
+            message: 'No se pudo cargar la nota clínica.'
+        });
+    }
+};

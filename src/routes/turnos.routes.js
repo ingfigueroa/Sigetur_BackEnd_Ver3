@@ -6,7 +6,7 @@ import authorize from "../middleware/authorize.js";
 
 import ROLES from "../constants/roles.js";
 
-import { getTurnosProfesionalFecha, putTurnosPasaraPendiente, getTurnosCrear, putTurnosCambiarEstados, getEstadosPorTurno, putTurnosAnularPorPedidoProfesional, getTurnosBuscarProfesionalDiaCancelado, getAgendaSemanalProfesionalFecha, getAgendaSemanalProfesionalFechaAgrupado, getTurnosConsultasPorFecha,getTurnoID, getTurnoLibreID, postEnviarTurnosManual, postSobreturnosCrear, getTurnosLibresProfesional_Falta_Mes, postTurnoCobrar, postTurnoRegistrarPrestaciones, getPrestacionesporTurno, getTurnoIDDetalle, getTurnosBuscarProfesionalDiaAtiende} from '../controllers/turnos.controllers.js';
+import { getTurnosProfesionalFecha, putTurnosPasaraPendiente, getTurnosCrear, putTurnosCambiarEstados, getEstadosPorTurno, putTurnosAnularPorPedidoProfesional, getTurnosBuscarProfesionalDiaCancelado, getAgendaSemanalProfesionalFecha, getAgendaSemanalProfesionalFechaAgrupado, getTurnosConsultasPorFecha,getTurnoID, getTurnoLibreID, postEnviarTurnosManual, postSobreturnosCrear, getTurnosLibresProfesional_Falta_Mes, postTurnoCobrar, postTurnoRegistrarPrestaciones, getPrestacionesporTurno, getTurnoIDDetalle, getTurnosBuscarProfesionalDiaAtiende, postTurnoNotaClinica} from '../controllers/turnos.controllers.js';
 
 const router = Router();
 
@@ -52,6 +52,8 @@ router.get('/turnos/prestacionesporturno',verificarTokenUsuario,  authorize([ROL
 router.get("/turnoid/detalle", verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]), getTurnoIDDetalle);
 
 router.get("/turnos/turnoprofesionaldiaatiende",verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]), getTurnosBuscarProfesionalDiaAtiende);
+
+router.post("/turnonotasclinicas",verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]), postTurnoNotaClinica);
 
 
  

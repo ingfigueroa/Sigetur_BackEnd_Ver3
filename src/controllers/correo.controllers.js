@@ -11,7 +11,7 @@ import {
   generarTokenHash
 } from '../utils/correo.js'
 
-const pool = await getConnection();
+
 
 
 

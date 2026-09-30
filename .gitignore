@@ -1,2 +1,4 @@
-node_modules
+node_modules/
 *.env
+uploads/
+softsigetur-2026-16-09-144831ff7e41.json
