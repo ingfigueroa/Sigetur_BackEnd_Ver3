@@ -116,7 +116,7 @@ export const postUpdatePassword = async (req, res) => {
       let result;
 
   
-      console.log("pasa por postaddtoken" + tokenhash)
+      console.log("pasa por postaddtoken: " + tokenhash)
       request.input('idusuario', sql.Int, idusuario )
       request.input('tokenhash', sql.VarChar, tokenhash )
      
@@ -128,7 +128,7 @@ export const postUpdatePassword = async (req, res) => {
 
 
     } catch (error) {
-      console.error('Error en la ejecución del procedimiento almacenado:', error);
+      
       return res.status(500).json({ message: 'Error en el servidor' }); // Enviar un mensaje de error al cliente
     
     }

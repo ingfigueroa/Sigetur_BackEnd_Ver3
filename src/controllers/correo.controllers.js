@@ -28,15 +28,7 @@ export const postCrearCuenta = async (req, res) => {
     hash
   } = generarTokenHash();
 
-
-
-
   try {
-
-
-    //tendria que guardar el codigo y el mail 
-    //para despues comparar
-
 
     const result = await createCodigoCrearCuenta(email, hash);
 
@@ -60,7 +52,7 @@ export const postCrearCuenta = async (req, res) => {
 
     
     const linkRegistro = `${process.env.FRONTEND_URL}/crearcuentapasodos?token=${token}`;
-    
+   
 
     await transporter.sendMail({
       from: `SIGETUR <${process.env.EMAIL_USER}>`,
@@ -174,7 +166,7 @@ export const tokenResetPassword = async (email, token) => {
           
           <p>Hemos recibido un pedido de cambio o actualización de contraseña.</p>
 
-          <h3>Tu código provisorio es:</h3>
+          <h3>Tu código provisorio para generar el cambio de contraseña es:</h3>
           <h1 style="letter-spacing:2px;">${token}</h1>
           <p>Válido por 20 minutos</p>
           

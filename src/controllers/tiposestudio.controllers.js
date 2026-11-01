@@ -1,5 +1,7 @@
 import { getConnection } from '../database/connection.js';
 
+
+
 import sql from 'mssql';
 
 import 'dotenv/config';
@@ -28,10 +30,11 @@ export const subirArchivoGoogleDrive = async (archivo) => {
     // ID de la carpeta de Google Drive
     const GOOGLE_DRIVE_FOLDER_ID =
         process.env.GOOGLE_DRIVE_FOLDER_ID;
-
-    const auth = new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET
+        
+const auth = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,     // 1° Parámetro: Client ID
+        process.env.GOOGLE_CLIENT_SECRET, // 2° Parámetro: Client Secret
+        process.env.GOOGLE_REDIRECT_URI   // 3° Parámetro: Redirect URI
     );
 
     auth.setCredentials({
@@ -87,6 +90,86 @@ export const subirArchivoGoogleDrive = async (archivo) => {
     }
 };
 
+
+
+export const obtenerImagenGoogleDrive = async (idArchivo) => {
+    
+    const auth = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_REDIRECT_URI
+    );
+
+    auth.setCredentials({
+        refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+    });
+
+    const drive = google.drive({
+        version: "v3",
+        auth
+    });
+
+    const metadata = await drive.files.get({
+        fileId: idArchivo,
+        fields: "mimeType"
+    });
+
+    const respuesta = await drive.files.get(
+        {
+            fileId: idArchivo,
+            alt: "media"
+        },
+        {
+            responseType: "stream"
+        }
+    );
+
+    return {
+        mimeType: metadata.data.mimeType || "application/octet-stream",
+        stream: respuesta.data
+    };
+};
+
+export const mostrarImagenMedica = async (req, res) => {
+    try {
+        const { idDrive } = req.query;
+        
+        if (!idDrive) {
+            return res.status(400).json({ mensaje: "Falta el ID de Google Drive." });
+        }
+        
+        const imagen = await obtenerImagenGoogleDrive(idDrive);
+
+        res.setHeader("Content-Type", imagen.mimeType);
+        res.setHeader("Cache-Control", "private, no-store");
+
+        imagen.stream.on("error", (error) => {
+            console.error("Error en el stream de Google Drive:", error); // <-- Añadido
+            if (!res.headersSent) {
+                res.status(500).end();
+            } else {
+                res.destroy(error);
+            }
+        });
+
+        imagen.stream.pipe(res);
+
+    } catch (error) {
+        // --- AQUÍ ESTÁ LA CLAVE PARA VER EL ERROR EN CONSOLA ---
+        console.error("DETALLE DEL ERROR 500 EN GOOGLE DRIVE:", error.message || error);
+        console.error(error); // Muestra el stack trace completo
+
+        if (!res.headersSent) {
+            res.status(500).json({
+                mensaje: "No se pudo obtener la imagen médica.",
+                error: error.message // Opcional: envíalo temporalmente al frontend para verlo en la consola del navegador
+            });
+        }
+    }
+};
+
+
+
 export const postGuardarArchivoMedico = async ({
     idpaciente,
     idturno,
@@ -132,6 +215,7 @@ export const postGuardarArchivoMedico = async ({
 
 
 
+
 export const subirYGuardarArchivo = async (req, res) => {
 
     try {
@@ -165,4 +249,36 @@ export const subirYGuardarArchivo = async (req, res) => {
             mensaje: error.message
         });
     }
+};
+
+export const getTiposEstudioIDPaciente = async (req, res) => {
+  try {
+    const { idpaciente } = req.query;
+
+   
+
+    if (!idpaciente) {
+      return res.status(400).json({
+        message: "Falta el idpaciente",
+      });
+    }
+
+    const pool = await getConnection();
+    const request = pool.request();
+
+    request.input("idpaciente", sql.Int, idpaciente);
+
+    const result = await request.execute(
+      "sp_Buscar_archivos_medicos_idpaciente"
+    );
+
+    return res.status(200).json(result.recordset);
+
+  } catch (error) {
+    console.error("Error al buscar estudios médicos:", error);
+
+    return res.status(500).json({
+      message: "Error en el servidor",
+    });
+  }
 };

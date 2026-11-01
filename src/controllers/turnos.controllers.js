@@ -894,10 +894,16 @@ export const getTurnoIDDetalle = async (req, res) => {
     //return res.json(result.recordset);
     const turno = result.recordsets[0][0] || null;
     const prestaciones = result.recordsets[1] || [];
+
+     const notasclinicas = result.recordsets[2] || [];
+
+      const archivosmedicos = result.recordsets[3] || [];
   
     return res.json({
         turno,
-        prestaciones
+        prestaciones,
+        notasclinicas,
+        archivosmedicos
     });
 
 

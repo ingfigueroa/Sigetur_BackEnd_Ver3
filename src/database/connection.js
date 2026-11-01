@@ -15,7 +15,7 @@ const dbSetting = {
     trustServerCertificate: true,
   },
 
-  requestTimeout: 300000,
+  requestTimeout: 30000,
 };
 
 let pool;
