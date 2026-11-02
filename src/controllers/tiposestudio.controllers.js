@@ -219,6 +219,8 @@ export const postGuardarArchivoMedico = async ({
 export const subirYGuardarArchivo = async (req, res) => {
 
     try {
+        console.log("DEBUG PRODUCCIÓN - FOLDER ID:", process.env.GOOGLE_DRIVE_FOLDER_ID ? "Existe" : "FALTA");
+console.log("DEBUG PRODUCCIÓN - REFRESH TOKEN:", process.env.GOOGLE_REFRESH_TOKEN ? "Existe" : "FALTA");
 
         const archivoDrive = await subirArchivoGoogleDrive(req.file);
 
@@ -238,16 +240,15 @@ export const subirYGuardarArchivo = async (req, res) => {
         });
 
     } catch (error) {
-
-        console.error(
-            'Error al subir y guardar archivo:',
-            error
-        );
-
-        return res.status(500).json({
-            ok: false,
-            mensaje: error.message
-        });
+        console.error('--- ERROR DETALLADO EN GOOGLE DRIVE ---');
+        console.error('Mensaje:', error.message);
+        if (error.errors) {
+            console.error('Errores de la API:', JSON.stringify(error.errors, null, 2));
+        } else {
+            console.error('Stack trace:', error.stack);
+        }
+        
+        throw error;
     }
 };
 
