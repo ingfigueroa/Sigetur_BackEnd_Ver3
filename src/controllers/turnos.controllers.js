@@ -904,7 +904,7 @@ export const getTurnoIDDetalle = async (req, res) => {
         prestaciones,
         notasclinicas,
         archivosmedicos
-    });
+    }); 
 
 
   } catch (error) {
