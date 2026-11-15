@@ -149,7 +149,6 @@ export const tokenResetPassword = async (email, token) => {
     
     const linkRegistro = `${process.env.FRONTEND_URL}/resetpassword?token=${token}`;
 
-
    
 
     //const linkRegistro = `http://localhost:5173/resetpassword?token=${token}`;
@@ -202,7 +201,10 @@ export const tokenResetPassword = async (email, token) => {
     
     return true;
   }catch (error) {
-    
+   
+  
+
+
     return false;
 }
 

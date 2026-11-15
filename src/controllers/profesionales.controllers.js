@@ -10,7 +10,7 @@ import { tokenResetPassword} from '../controllers/correo.controllers.js'
 
 
 
-export const getProfesionales = async (req, res) => {
+export const getProfesionalesDNIidCliente = async (req, res) => {
   try {
     const {
       idcliente,
@@ -38,12 +38,13 @@ export const getProfesionales = async (req, res) => {
     const request = pool.request();
     let result;
      request.input('idcliente', sql.Int, idcliente);
+     
   
     if (VarDni > 0) {
 
       request.input('Dni', sql.Int, VarDni);
         
-      result = await request.execute('sp_Buscar_Profesional_Dni');
+      result = await request.execute('sp_Buscar_Profesional_DNI_idcliente');
   
     } else if (Apellido != null && Apellido != '') {
      
@@ -79,6 +80,77 @@ export const getProfesionales = async (req, res) => {
 
   } catch (error) {
     console.error('Error en la ejecución del procedimiento almacenado:', error);
+    return res.status(500).json({
+      message: 'Error en el servidor'
+    });
+  }
+};
+
+export const getProfesionalesSoloDNIActivoOtroCliente = async (req, res) => {
+  try {
+    const {
+      VarDni,
+      
+    } = req.query;
+
+
+  
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+   
+  
+    if (VarDni > 0) {
+
+      request.input('Dni', sql.Int, VarDni);
+        
+      result = await request.execute('sp_Buscar_Profesional_DNI_Activo_Otro_Cliente');
+  
+    }
+ 
+
+   return res.json({
+      total: result.recordsets[0][0].Total,
+      registros: result.recordsets[1]
+    });
+
+  } catch (error) {
+    
+    return res.status(500).json({
+      message: 'Error en el servidor'
+    });
+  }
+};
+
+export const getProfesionalesSoloDNIActivoTablaProfesionales = async (req, res) => {
+  try {
+    const {
+      VarDni,
+      
+    } = req.query;
+
+
+  
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+   
+    if (VarDni > 0) {
+
+      request.input('Dni', sql.Int, VarDni);
+        
+      result = await request.execute('sp_Buscar_Profesional_solo_DNI');
+  
+    }
+ 
+
+   return res.json({
+      total: result.recordsets[0][0].Total,
+      registros: result.recordsets[1]
+    });
+
+  } catch (error) {
+    
     return res.status(500).json({
       message: 'Error en el servidor'
     });

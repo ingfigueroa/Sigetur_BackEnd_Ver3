@@ -3,7 +3,7 @@ import {
   sql
 } from '../database/connection.js';
 
-export const getPacientes = async (req, res) => {
+export const getPacientesDNIidCliente = async (req, res) => {
   try {
     const {
       idcliente,
@@ -22,10 +22,12 @@ export const getPacientes = async (req, res) => {
     const request = pool.request();
     let result;
 
+  
+
     if (VarDni > 0) {
        request.input('idcliente', sql.Int, idcliente);
       request.input('DNI', sql.Int, VarDni);
-      result = await request.execute('sp_Buscar_Pacientes_Dni');
+      result = await request.execute('sp_Buscar_Pacientes_Dni_idcliente');
     } else if (Apellido != null && Apellido != '') {
       request.input('idcliente', sql.Int, idcliente);
       request.input('Apellido', sql.VarChar, Apellido);
@@ -58,6 +60,46 @@ export const getPacientes = async (req, res) => {
     }); // Enviar un mensaje de error al cliente
   }
 };
+
+
+export const getPacienteSoloDNIActivoTablaPaciente = async (req, res) => {
+  try {
+    const {
+      VarDni,
+      
+    } = req.query;
+
+
+  
+    const pool = await getConnection();
+    const request = pool.request();
+    let result;
+   
+    
+ 
+  
+    if (VarDni > 0) {
+  
+      request.input('Dni', sql.Int, VarDni);
+        
+      result = await request.execute('sp_Buscar_Pacientes_solo_DNI');
+      
+  
+    }
+ 
+   return res.json({
+      total: result.recordsets[0][0].Total,
+      registros: result.recordsets[1]
+    });
+
+  } catch (error) {
+    
+    return res.status(500).json({
+      message: 'Error en el servidor'
+    });
+  }
+};
+
  
 export const createPacientes = async (req, res) => {
   try {

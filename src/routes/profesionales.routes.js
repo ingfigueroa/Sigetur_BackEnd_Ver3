@@ -6,11 +6,15 @@ import authorize from "../middleware/authorize.js";
 
 import ROLES from "../constants/roles.js";
 
-import { createProfesionales, getProfesionales, getProfesionalProfesion, getProfesionalesHorarios,getProfesionalBuscarID, putProfesionalPasaraPasivo, getProfesionalFechaCambioHorario, putProfesionalCambioHorarioMultiple, getIDProfesionalBuscarxEmail } from '../controllers/profesionales.controllers.js';
+import { createProfesionales, getProfesionalesDNIidCliente, getProfesionalProfesion, getProfesionalesHorarios,getProfesionalBuscarID, putProfesionalPasaraPasivo, getProfesionalFechaCambioHorario, putProfesionalCambioHorarioMultiple, getIDProfesionalBuscarxEmail, getProfesionalesSoloDNIActivoOtroCliente, getProfesionalesSoloDNIActivoTablaProfesionales } from '../controllers/profesionales.controllers.js';
 
 const router = Router();
 
-router.get("/profesionales",  verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]),  getProfesionales);
+router.get("/profesionales",  verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]),  getProfesionalesDNIidCliente);
+
+router.get("/profesionalessolodniactivootrocliente",  verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]),  getProfesionalesSoloDNIActivoOtroCliente);
+
+router.get("/profesionalessolodniactivotablaprofesionales",  verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA]),  getProfesionalesSoloDNIActivoTablaProfesionales);
 
 
 router.get("/profesionaleshorarios", verificarTokenUsuario,  authorize([ROLES.ADMIN, ROLES.SECRETARIA, ROLES.PROFESIONAL]),  getProfesionalesHorarios);
