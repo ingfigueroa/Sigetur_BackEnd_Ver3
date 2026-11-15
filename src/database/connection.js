@@ -22,7 +22,7 @@ let pool;
 
 export const getConnection = async () => {
   try {
-    if (pool) {
+  /*   if (pool) {
       if (pool.connected) {
         return pool;
       }
@@ -31,7 +31,7 @@ export const getConnection = async () => {
         pool = await sql.connect(dbSetting);
         return pool;
       }
-    }
+    } */
 
     pool = await sql.connect(dbSetting);
     return pool;
