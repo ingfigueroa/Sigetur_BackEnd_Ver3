@@ -22,14 +22,15 @@ export const getPacientesDNIidCliente = async (req, res) => {
     const request = pool.request();
     let result;
 
-  
+   request.input('idcliente', sql.Int, idcliente);
 
     if (VarDni > 0) {
-       request.input('idcliente', sql.Int, idcliente);
+      
       request.input('DNI', sql.Int, VarDni);
       result = await request.execute('sp_Buscar_Pacientes_Dni_idcliente');
+
     } else if (Apellido != null && Apellido != '') {
-      request.input('idcliente', sql.Int, idcliente);
+     
       request.input('Apellido', sql.VarChar, Apellido);
       request.input('Offset', sql.Int, offset);
       request.input('Limit', sql.Int, limit);
@@ -39,7 +40,7 @@ export const getPacientesDNIidCliente = async (req, res) => {
     } else {
 
       let Apellido = '';
-        request.input('idcliente', sql.Int, idcliente);
+     
       request.input('Apellido', sql.VarChar, Apellido);
       request.input('Offset', sql.Int, offset);
       request.input('Limit', sql.Int, limit);
@@ -164,6 +165,46 @@ export const createPacientes = async (req, res) => {
     });
   }
 };
+
+
+export const createPacienteCliente = async (req, res) => {
+  try {
+
+    const {
+      idcliente,
+      idpaciente,
+      idusuario,
+     } = req.body;
+
+    
+    // VALIDACIONES
+ 
+
+    const pool = await getConnection(); 
+    const request = pool.request();
+
+    request.input('idcliente', sql.Int, idcliente);
+    request.input('idpaciente', sql.Int, idpaciente);
+   
+    request.input('idusuario', sql.Int, idusuario);
+  
+
+    const result = await request.execute('sp_relacionar_paciente_consultorio');
+
+    return res.status(201).json({
+      ok: true,
+     
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({ 
+      ok: false,
+      message: 'Error en el servidor'
+    });
+  }
+};
+
 
 
 export const updatePacientes = async (req, res) => {

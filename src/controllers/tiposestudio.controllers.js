@@ -219,8 +219,7 @@ export const postGuardarArchivoMedico = async ({
 export const subirYGuardarArchivo = async (req, res) => {
 
     try {
-        console.log("DEBUG PRODUCCIÓN - FOLDER ID:", process.env.GOOGLE_DRIVE_FOLDER_ID ? "Existe" : "FALTA");
-console.log("DEBUG PRODUCCIÓN - REFRESH TOKEN:", process.env.GOOGLE_REFRESH_TOKEN ? "Existe" : "FALTA");
+     
 
         const archivoDrive = await subirArchivoGoogleDrive(req.file);
 
